@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/suite"
@@ -49,6 +50,16 @@ func (s *ErrorSuite) TestWrapSQLError_NilReturnsNil() {
 
 func (s *ErrorSuite) TestWrapSQLError_ErrNoRows_ReturnsNotFound() {
 	err := yca_repository.WrapSQLError(sql.ErrNoRows)
+	s.Require().Error(err)
+
+	var apiErr *yca_error.Error
+	s.Require().ErrorAs(err, &apiErr)
+	s.Equal(404, apiErr.StatusCode)
+	s.Equal("NotFound", apiErr.ErrorCode)
+}
+
+func (s *ErrorSuite) TestWrapSQLError_PgxErrNoRows_ReturnsNotFound() {
+	err := yca_repository.WrapSQLError(pgx.ErrNoRows)
 	s.Require().Error(err)
 
 	var apiErr *yca_error.Error

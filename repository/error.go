@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	yca_error "github.com/yca-software/yca-go-core/error"
 )
@@ -13,7 +14,7 @@ func WrapSQLError(err error) error {
 		return nil
 	}
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, sql.ErrNoRows) || errors.Is(err, pgx.ErrNoRows) {
 		return yca_error.NewNotFoundError(err, "NotFound", nil)
 	}
 
