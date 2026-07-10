@@ -3,7 +3,7 @@
 Typed HTTP/API errors for 2Chi projects. Handlers return `*Error` values with a status code and a JSON body shaped for client i18n via `errorCode`.
 
 ```go
-import chi_error "github.com/yca-software/yca-go-core/error"
+import yca_error "github.com/yca-software/yca-go-core/error"
 ```
 
 ## Error shape
@@ -53,18 +53,18 @@ Each constructor takes `(err error, errorCode string, extra any)` and sets the m
 
 ```go
 // Domain error with i18n key — preferred for API responses
-return chi_error.NewNotFoundError(nil, "USER_NOT_FOUND", nil)
+return yca_error.NewNotFoundError(nil, "USER_NOT_FOUND", nil)
 
 // Validation with structured extra
-return chi_error.NewBadRequestError(nil, "INVALID_EMAIL", map[string]any{
+return yca_error.NewBadRequestError(nil, "INVALID_EMAIL", map[string]any{
     "field": "email",
 })
 
 // Internal failure — log Err, return safe JSON
-return chi_error.NewInternalServerError(dbErr, "InternalServerError", nil)
+return yca_error.NewInternalServerError(dbErr, "InternalServerError", nil)
 
 // In an HTTP error handler:
-if apiErr, ok := chi_error.AsError(err); ok {
+if apiErr, ok := yca_error.AsError(err); ok {
     return c.JSON(apiErr.StatusCode, apiErr)
 }
 ```

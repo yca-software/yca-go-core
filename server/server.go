@@ -1,4 +1,4 @@
-package chi_server
+package yca_server
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	chi_error "github.com/yca-software/yca-go-core/error"
-	chi_logger "github.com/yca-software/yca-go-core/logger"
-	chi_observer "github.com/yca-software/yca-go-core/observer"
+	yca_error "github.com/yca-software/yca-go-core/error"
+	yca_logger "github.com/yca-software/yca-go-core/logger"
+	yca_observer "github.com/yca-software/yca-go-core/observer"
 )
 
 type ServerConfig struct {
@@ -21,8 +21,8 @@ type ServerConfig struct {
 	ServerReadTimeout  int
 	ServerWriteTimeout int
 	ServerIdleTimeout  int
-	Logger             chi_logger.Logger
-	Observer           chi_observer.HTTPMiddlewareProvider
+	Logger             yca_logger.Logger
+	Observer           yca_observer.HTTPMiddlewareProvider
 	RegisterRoutes     func(e *echo.Echo)
 }
 
@@ -42,7 +42,7 @@ func New(cfg ServerConfig) Server {
 	e := echo.New()
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		if apiErr, ok := chi_error.AsError(err); ok {
+		if apiErr, ok := yca_error.AsError(err); ok {
 			c.JSON(apiErr.StatusCode, apiErr)
 			return
 		}
@@ -54,7 +54,7 @@ func New(cfg ServerConfig) Server {
 			return
 		}
 
-		apiErr := chi_error.NewInternalServerError(err, "", nil)
+		apiErr := yca_error.NewInternalServerError(err, "", nil)
 		c.JSON(apiErr.StatusCode, apiErr)
 	}
 

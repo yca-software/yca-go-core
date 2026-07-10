@@ -1,4 +1,4 @@
-package chi_validator
+package yca_validator
 
 import (
 	"errors"

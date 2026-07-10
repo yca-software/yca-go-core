@@ -3,7 +3,7 @@
 Structured logging for 2Chi projects, built on Go's `log/slog` with optional context field injection and sensitive-data redaction.
 
 ```go
-import chi_logger "github.com/yca-software/yca-go-core/logger"
+import yca_logger "github.com/yca-software/yca-go-core/logger"
 ```
 
 ## Logger
@@ -36,10 +36,10 @@ When the threshold is `debug`, log records include a `source` field (file and li
 ### Example
 
 ```go
-log := chi_logger.New(chi_logger.LoggerConfig{
+log := yca_logger.New(yca_logger.LoggerConfig{
     OutputType:     "json",
     ThresholdLevel: "info",
-    Redaction:      chi_logger.DefaultRedactionConfig(),
+    Redaction:      yca_logger.DefaultRedactionConfig(),
 })
 
 log.Info("server started", "port", 8080)
@@ -57,7 +57,7 @@ extractor := func(ctx context.Context) map[string]any {
     return nil
 }
 
-log := chi_logger.New(chi_logger.LoggerConfig{
+log := yca_logger.New(yca_logger.LoggerConfig{
     ContextExtractor: extractor,
 })
 
@@ -81,9 +81,9 @@ log.WithContext(ctx).Info("handled")
 Redaction applies to top-level slog attributes. To redact fields inside structs, implement `slog.LogValuer` on your types.
 
 ```go
-log := chi_logger.New(chi_logger.LoggerConfig{
+log := yca_logger.New(yca_logger.LoggerConfig{
     OutputType: "json",
-    Redaction:  chi_logger.DefaultRedactionConfig(),
+    Redaction:  yca_logger.DefaultRedactionConfig(),
 })
 
 log.Info("login", "password", "secret") // password value becomes [REDACTED]
@@ -94,7 +94,7 @@ log.Info("login", "password", "secret") // password value becomes [REDACTED]
 `MockLogger` is a testify mock for the `Logger` interface:
 
 ```go
-m := new(chi_logger.MockLogger)
+m := new(yca_logger.MockLogger)
 m.On("Info", "hello", "k", 1).Return()
 m.On("With", "svc", "api").Return(m).Maybe()
 m.On("WithContext", mock.Anything).Return(m).Maybe()

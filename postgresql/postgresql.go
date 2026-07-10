@@ -1,4 +1,4 @@
-package chi_postgresql
+package yca_postgresql
 
 import (
 	"context"

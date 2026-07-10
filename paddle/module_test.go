@@ -1,11 +1,11 @@
-package chi_paddle_test
+package yca_paddle_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
 
-	chi_paddle "github.com/yca-software/yca-go-core/paddle"
+	yca_paddle "github.com/yca-software/yca-go-core/paddle"
 )
 
 type ModuleSuite struct {
@@ -17,15 +17,15 @@ func TestModuleSuite(t *testing.T) {
 }
 
 func (s *ModuleSuite) TestNew_requiresAPIKey() {
-	_, err := chi_paddle.New(chi_paddle.Config{})
+	_, err := yca_paddle.New(yca_paddle.Config{})
 	s.Require().Error(err)
 	s.Contains(err.Error(), "API key is required")
 }
 
 func (s *ModuleSuite) TestNew_sandbox() {
-	mod, err := chi_paddle.New(chi_paddle.Config{
+	mod, err := yca_paddle.New(yca_paddle.Config{
 		APIKey:      "test_api_key_123",
-		Environment: chi_paddle.PaddleEnvironmentSandbox,
+		Environment: yca_paddle.PaddleEnvironmentSandbox,
 	})
 	s.Require().NoError(err)
 	s.NotNil(mod.Customer)
@@ -34,9 +34,9 @@ func (s *ModuleSuite) TestNew_sandbox() {
 }
 
 func (s *ModuleSuite) TestNew_production() {
-	mod, err := chi_paddle.New(chi_paddle.Config{
+	mod, err := yca_paddle.New(yca_paddle.Config{
 		APIKey:      "test_api_key_123",
-		Environment: chi_paddle.PaddleEnvironmentProduction,
+		Environment: yca_paddle.PaddleEnvironmentProduction,
 	})
 	s.Require().NoError(err)
 	s.NotNil(mod.Customer)

@@ -1,4 +1,4 @@
-package chi_ratelimit
+package yca_ratelimit
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 
 const (
 	// DeviceIDCookieName is the first-party device identifier cookie.
-	DeviceIDCookieName = "2chi_device_id"
+	DeviceIDCookieName = "2yca_device_id"
 	deviceIDHeaderName = "X-Device-Id"
 	deviceIDContextKey = "deviceId"
 	deviceIDMaxAge     = 365 * 24 * 60 * 60 // ~1 year

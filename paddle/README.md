@@ -3,25 +3,25 @@
 Paddle Billing integration for 2Chi services.
 
 ```go
-import chi_paddle "github.com/yca-software/yca-go-core/paddle"
+import yca_paddle "github.com/yca-software/yca-go-core/paddle"
 ```
 
 Subpackages expose service interfaces, types, and mocks:
 
 ```go
 import (
-    chi_paddle_customer "github.com/yca-software/yca-go-core/paddle/customer"
-    chi_paddle_subscription "github.com/yca-software/yca-go-core/paddle/subscription"
-    chi_paddle_transaction "github.com/yca-software/yca-go-core/paddle/transaction"
+    yca_paddle_customer "github.com/yca-software/yca-go-core/paddle/customer"
+    yca_paddle_subscription "github.com/yca-software/yca-go-core/paddle/subscription"
+    yca_paddle_transaction "github.com/yca-software/yca-go-core/paddle/transaction"
 )
 ```
 
 ## Setup
 
 ```go
-mod, err := chi_paddle.New(chi_paddle.Config{
+mod, err := yca_paddle.New(yca_paddle.Config{
     APIKey:      cfg.PaddleAPIKey,
-    Environment: chi_paddle.PaddleEnvironmentSandbox, // or PaddleEnvironmentProduction
+    Environment: yca_paddle.PaddleEnvironmentSandbox, // or PaddleEnvironmentProduction
 })
 if err != nil {
     return err
@@ -41,11 +41,11 @@ Each subpackage includes a testify mock (`MockCustomerService`, `MockSubscriptio
 ## Webhooks
 
 ```go
-if !chi_paddle.VerifyWebhook(webhookSecret, body, r.Header.Get("Paddle-Signature")) {
+if !yca_paddle.VerifyWebhook(webhookSecret, body, r.Header.Get("Paddle-Signature")) {
     return http.StatusUnauthorized
 }
 
-var event chi_paddle.WebhookEvent
+var event yca_paddle.WebhookEvent
 // decode body into event
 ```
 

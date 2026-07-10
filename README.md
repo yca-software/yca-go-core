@@ -29,11 +29,11 @@ Each top-level directory is a subpackage:
 | `archive` | `github.com/yca-software/yca-go-core/archive` |
 | `test` | `github.com/yca-software/yca-go-core/test` |
 
-Prefer `chi_<pkg>` import aliases:
+Prefer `yca_<pkg>` import aliases:
 
 ```go
-chi_error "github.com/yca-software/yca-go-core/error"
-chi_server "github.com/yca-software/yca-go-core/server"
+yca_error "github.com/yca-software/yca-go-core/error"
+yca_server "github.com/yca-software/yca-go-core/server"
 ```
 
 ## Verify
@@ -49,8 +49,8 @@ Integration tests (`postgresql`, `repository`) require Docker.
 Replace separate modules with subpackage imports:
 
 ```diff
--chi_error "github.com/yca-software/2chi-go-error"
-+chi_error "github.com/yca-software/yca-go-core/error"
+-yca_error "github.com/yca-software/2chi-go-error"
++yca_error "github.com/yca-software/yca-go-core/error"
 ```
 
 ```diff

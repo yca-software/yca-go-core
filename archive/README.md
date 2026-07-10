@@ -3,7 +3,7 @@
 Shared archive filter types and helpers for soft-delete aware list/search APIs in 2Chi projects.
 
 ```go
-import chi_archive "github.com/yca-software/yca-go-core/archive"
+import yca_archive "github.com/yca-software/yca-go-core/archive"
 ```
 
 ## Constants
@@ -20,7 +20,7 @@ import chi_archive "github.com/yca-software/yca-go-core/archive"
 | Function | Description |
 | --- | --- |
 | `NormalizeArchiveFilter(filter ArchiveFilter) (ArchiveFilter, error)` | Validate a typed filter; empty input defaults to active |
-| `ParseArchiveFilterQuery(value string) (ArchiveFilter, error)` | Parse an HTTP query value; invalid input returns a 400 `chi_error` |
+| `ParseArchiveFilterQuery(value string) (ArchiveFilter, error)` | Parse an HTTP query value; invalid input returns a 400 `yca_error` |
 
 Use `NormalizeArchiveFilter` in repositories and services where the filter is already typed. Use `ParseArchiveFilterQuery` at HTTP boundaries (for example `?archive=archived`).
 
@@ -28,19 +28,19 @@ Use `NormalizeArchiveFilter` in repositories and services where the filter is al
 
 ```go
 // HTTP handler
-filter, err := chi_archive.ParseArchiveFilterQuery(c.QueryParam("archive"))
+filter, err := yca_archive.ParseArchiveFilterQuery(c.QueryParam("archive"))
 if err != nil {
     return err
 }
 
 // Repository
-filter, err := chi_archive.NormalizeArchiveFilter(filter)
+filter, err := yca_archive.NormalizeArchiveFilter(filter)
 if err != nil {
     return nil, err
 }
 
 switch filter {
-case chi_archive.ArchiveFilterArchived:
+case yca_archive.ArchiveFilterArchived:
     // deleted_at IS NOT NULL
 default:
     // deleted_at IS NULL

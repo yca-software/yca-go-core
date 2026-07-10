@@ -3,7 +3,7 @@
 PostgreSQL client wrapper for 2Chi projects, built on [sqlx](https://github.com/jmoiron/sqlx) and [pgx](https://github.com/jackc/pgx).
 
 ```go
-import chi_postgresql "github.com/yca-software/yca-go-core/postgresql"
+import yca_postgresql "github.com/yca-software/yca-go-core/postgresql"
 ```
 
 ## Configuration
@@ -28,7 +28,7 @@ import chi_postgresql "github.com/yca-software/yca-go-core/postgresql"
 ## Example
 
 ```go
-pg, err := chi_postgresql.NewPostgreSQL(chi_postgresql.PostgreSQLClientConfig{
+pg, err := yca_postgresql.NewPostgreSQL(yca_postgresql.PostgreSQLClientConfig{
     DSN:             cfg.PostgresDSN,
     MaxOpenConns:    10,
     MaxIdleConns:    5,

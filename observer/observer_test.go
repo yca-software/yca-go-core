@@ -1,4 +1,4 @@
-package chi_observer_test
+package yca_observer_test
 
 import (
 	"errors"
@@ -13,13 +13,13 @@ import (
 	dto "github.com/prometheus/client_model/go"
 	"github.com/stretchr/testify/suite"
 
-	chi_observer "github.com/yca-software/yca-go-core/observer"
+	yca_observer "github.com/yca-software/yca-go-core/observer"
 )
 
 type ObserverSuite struct {
 	suite.Suite
 	namespace string
-	obs       *chi_observer.Observer
+	obs       *yca_observer.Observer
 }
 
 func TestObserverSuite(t *testing.T) {
@@ -32,7 +32,7 @@ func (s *ObserverSuite) SetupTest() {
 	prometheus.DefaultGatherer = reg
 
 	s.namespace = "obs_test"
-	obs, err := chi_observer.New(chi_observer.ObserverConfig{
+	obs, err := yca_observer.New(yca_observer.ObserverConfig{
 		Namespace: s.namespace,
 		AppName:   "testapp",
 	})
@@ -123,9 +123,9 @@ func (s *ObserverSuite) serveHTTP(e *echo.Echo, method, path string) *httptest.R
 
 func (s *ObserverSuite) TestNew_registersCollectors() {
 	s.obs.RecordQuery("ping", "health", "ping_health", "success", time.Millisecond)
-	s.obs.RecordRateLimitHit(http.MethodGet, "/health", chi_observer.PrincipalTypeIP, "127.0.0.1", "127.0.0.1")
+	s.obs.RecordRateLimitHit(http.MethodGet, "/health", yca_observer.PrincipalTypeIP, "127.0.0.1", "127.0.0.1")
 	s.obs.RecordJobPublished("cleanup")
-	s.obs.RecordJobConsumerOutcome("cleanup", chi_observer.JobOutcomeSuccess)
+	s.obs.RecordJobConsumerOutcome("cleanup", yca_observer.JobOutcomeSuccess)
 	s.obs.RecordJobConsumerDuration("cleanup", time.Millisecond)
 
 	rec := s.serveHTTP(s.echoWithHello(), http.MethodGet, "/hello")
@@ -155,7 +155,7 @@ func (s *ObserverSuite) TestRecordRateLimitHit_observesCounter() {
 	s.obs.RecordRateLimitHit(
 		http.MethodPost,
 		"/api/v1/auth/login",
-		chi_observer.PrincipalTypeUser,
+		yca_observer.PrincipalTypeUser,
 		userID,
 		clientIP,
 	)
@@ -164,8 +164,8 @@ func (s *ObserverSuite) TestRecordRateLimitHit_observesCounter() {
 		"method":         "POST",
 		"route":          "/api/v1/auth/login",
 		"principal_type": "user",
-		"principal_hash": chi_observer.HashRateLimitIdentifier(userID),
-		"ip_hash":        chi_observer.HashRateLimitIdentifier(clientIP),
+		"principal_hash": yca_observer.HashRateLimitIdentifier(userID),
+		"ip_hash":        yca_observer.HashRateLimitIdentifier(clientIP),
 		"app":            "testapp",
 	}
 	s.Equal(1.0, s.findCounter(s.metricName("rate_limit", "hits_total"), labels))
@@ -313,11 +313,11 @@ func (s *ObserverSuite) TestGetQueryMetricsHook() {
 
 func (s *ObserverSuite) TestRecordJobMetrics_perJob() {
 	s.obs.RecordJobPublished("cleanup")
-	s.obs.RecordJobConsumerOutcome("cleanup", chi_observer.JobOutcomeSuccess)
+	s.obs.RecordJobConsumerOutcome("cleanup", yca_observer.JobOutcomeSuccess)
 	s.obs.RecordJobConsumerDuration("cleanup", 150*time.Millisecond)
 
 	published := map[string]string{"job": "cleanup", "app": "testapp"}
-	outcome := map[string]string{"job": "cleanup", "outcome": chi_observer.JobOutcomeSuccess, "app": "testapp"}
+	outcome := map[string]string{"job": "cleanup", "outcome": yca_observer.JobOutcomeSuccess, "app": "testapp"}
 	duration := map[string]string{"job": "cleanup", "app": "testapp"}
 
 	s.Equal(1.0, s.findCounter(s.metricName("job_consumer", "published_total"), published))
@@ -332,11 +332,11 @@ func (s *ObserverSuite) TestGetJobMetricsHook() {
 }
 
 func (s *ObserverSuite) TestObserver_implementsQueryMetricsHook() {
-	var _ chi_observer.QueryMetricsHook = s.obs
+	var _ yca_observer.QueryMetricsHook = s.obs
 }
 
 func (s *ObserverSuite) TestNew_idempotentRegistration() {
-	second, err := chi_observer.New(chi_observer.ObserverConfig{
+	second, err := yca_observer.New(yca_observer.ObserverConfig{
 		Namespace: s.namespace,
 		AppName:   "testapp",
 	})

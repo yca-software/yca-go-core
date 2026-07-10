@@ -1,4 +1,4 @@
-package chi_types_test
+package yca_types_test
 
 import (
 	"bytes"
@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	chi_types "github.com/yca-software/yca-go-core/types"
+	yca_types "github.com/yca-software/yca-go-core/types"
 )
 
 type GeoSuite struct {
@@ -19,17 +19,17 @@ func TestGeoSuite(t *testing.T) {
 }
 
 func (s *GeoSuite) TestPointValue() {
-	p := chi_types.Point{Lng: 2.3522, Lat: 48.8566}
+	p := yca_types.Point{Lng: 2.3522, Lat: 48.8566}
 	val, err := p.Value()
 	s.Require().NoError(err)
 	s.Equal("SRID=4326;POINT(2.3522 48.8566)", val)
 }
 
 func (s *GeoSuite) TestPointScanEWKB() {
-	want := chi_types.Point{Lng: -73.9857, Lat: 40.7484}
+	want := yca_types.Point{Lng: -73.9857, Lat: 40.7484}
 	hexPayload := hex.EncodeToString(buildEWKB(want.Lng, want.Lat))
 
-	var got chi_types.Point
+	var got yca_types.Point
 	s.Require().NoError(got.Scan(hexPayload))
 	s.Equal(want, got)
 }
@@ -45,7 +45,7 @@ func buildEWKB(lng, lat float64) []byte {
 }
 
 func (s *GeoSuite) TestPolygonScanEWKBBytes() {
-	ring := []chi_types.Point{
+	ring := []yca_types.Point{
 		{Lng: 10.7, Lat: 59.9},
 		{Lng: 10.71, Lat: 59.9},
 		{Lng: 10.71, Lat: 59.91},
@@ -53,14 +53,14 @@ func (s *GeoSuite) TestPolygonScanEWKBBytes() {
 	}
 	payload := buildPolygonEWKB(ring)
 
-	var got chi_types.Polygon
+	var got yca_types.Polygon
 	s.Require().NoError(got.Scan(payload))
 	s.Len(got, 4)
 	s.InDelta(10.7, got[0].Lng, 0.001)
 	s.InDelta(59.9, got[0].Lat, 0.001)
 }
 
-func buildPolygonEWKB(ring []chi_types.Point) []byte {
+func buildPolygonEWKB(ring []yca_types.Point) []byte {
 	var buf bytes.Buffer
 	_ = binary.Write(&buf, binary.LittleEndian, byte(1))
 	_ = binary.Write(&buf, binary.LittleEndian, uint32(0x20000003))

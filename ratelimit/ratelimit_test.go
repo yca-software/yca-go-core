@@ -1,4 +1,4 @@
-package chi_ratelimit_test
+package yca_ratelimit_test
 
 import (
 	"net/http"
@@ -11,9 +11,9 @@ import (
 	redisclient "github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/suite"
 
-	chi_error "github.com/yca-software/yca-go-core/error"
-	chi_ratelimit "github.com/yca-software/yca-go-core/ratelimit"
-	chi_types "github.com/yca-software/yca-go-core/types"
+	yca_error "github.com/yca-software/yca-go-core/error"
+	yca_ratelimit "github.com/yca-software/yca-go-core/ratelimit"
+	yca_types "github.com/yca-software/yca-go-core/types"
 )
 
 type RateLimitSuite struct {
@@ -48,7 +48,7 @@ func (s *RateLimitSuite) SetupTest() {
 }
 
 func testHTTPErrorHandler(err error, c echo.Context) {
-	if apiErr, ok := chi_error.AsError(err); ok {
+	if apiErr, ok := yca_error.AsError(err); ok {
 		_ = c.JSON(apiErr.StatusCode, apiErr)
 		return
 	}
@@ -62,7 +62,7 @@ func (s *RateLimitSuite) newEcho() *echo.Echo {
 }
 
 func (s *RateLimitSuite) TestNilRedis_PassThrough() {
-	rl := chi_ratelimit.NewRateLimiter(nil, nil, nil)
+	rl := yca_ratelimit.NewRateLimiter(nil, nil, nil)
 	e := s.newEcho()
 	e.Use(rl.IPRateLimit("1-M"))
 	e.GET("/", func(c echo.Context) error { return c.NoContent(http.StatusOK) })
@@ -75,7 +75,7 @@ func (s *RateLimitSuite) TestNilRedis_PassThrough() {
 }
 
 func (s *RateLimitSuite) TestIPRateLimit_EnforcesLimit() {
-	rl := chi_ratelimit.NewRateLimiter(s.redis, nil, nil)
+	rl := yca_ratelimit.NewRateLimiter(s.redis, nil, nil)
 	e := s.newEcho()
 	e.Use(rl.IPRateLimit("1-M"))
 	e.GET("/", func(c echo.Context) error { return c.NoContent(http.StatusOK) })
@@ -103,23 +103,23 @@ func (s *RateLimitSuite) serveWithMiddleware(mw echo.MiddlewareFunc, req *http.R
 }
 
 func (s *RateLimitSuite) TestIPDeviceRateLimit_SeparateBucketsPerDevice() {
-	rl := chi_ratelimit.NewRateLimiter(s.redis, nil, nil)
+	rl := yca_ratelimit.NewRateLimiter(s.redis, nil, nil)
 	mw := rl.IPDeviceRateLimit("1-M")
 
 	req1 := httptest.NewRequest(http.MethodGet, "/", nil)
 	req1.RemoteAddr = "203.0.113.10:12345"
-	req1.AddCookie(&http.Cookie{Name: chi_ratelimit.DeviceIDCookieName, Value: uuid.NewString()})
+	req1.AddCookie(&http.Cookie{Name: yca_ratelimit.DeviceIDCookieName, Value: uuid.NewString()})
 
 	req2 := httptest.NewRequest(http.MethodGet, "/", nil)
 	req2.RemoteAddr = "203.0.113.10:12345"
-	req2.AddCookie(&http.Cookie{Name: chi_ratelimit.DeviceIDCookieName, Value: uuid.NewString()})
+	req2.AddCookie(&http.Cookie{Name: yca_ratelimit.DeviceIDCookieName, Value: uuid.NewString()})
 
 	s.Equal(http.StatusOK, s.serveWithMiddleware(mw, req1).Code)
 	s.Equal(http.StatusOK, s.serveWithMiddleware(mw, req2).Code)
 }
 
 func (s *RateLimitSuite) TestPrincipalRateLimit_UsesAuthenticatedSubject() {
-	rl := chi_ratelimit.NewRateLimiter(s.redis, nil, nil)
+	rl := yca_ratelimit.NewRateLimiter(s.redis, nil, nil)
 	mw := rl.PrincipalRateLimit("1-M")
 
 	userID := uuid.New()
@@ -129,8 +129,8 @@ func (s *RateLimitSuite) TestPrincipalRateLimit_UsesAuthenticatedSubject() {
 	e := s.newEcho()
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Set("accessInfo", &chi_types.AccessInfo{
-				Type:      chi_types.AccessTypeUser,
+			c.Set("accessInfo", &yca_types.AccessInfo{
+				Type:      yca_types.AccessTypeUser,
 				SubjectID: userID,
 			})
 			return next(c)
@@ -149,15 +149,15 @@ func (s *RateLimitSuite) TestPrincipalRateLimit_UsesAuthenticatedSubject() {
 }
 
 func (s *RateLimitSuite) TestScopedPrincipalRateLimit_ScopesKeys() {
-	rl := chi_ratelimit.NewRateLimiter(s.redis, nil, nil)
+	rl := yca_ratelimit.NewRateLimiter(s.redis, nil, nil)
 	scopeA := rl.ScopedPrincipalRateLimit("1-M", "email")
 	scopeB := rl.ScopedPrincipalRateLimit("1-M", "sms")
 
 	userID := uuid.New()
 	setUser := func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			c.Set("accessInfo", &chi_types.AccessInfo{
-				Type:      chi_types.AccessTypeUser,
+			c.Set("accessInfo", &yca_types.AccessInfo{
+				Type:      yca_types.AccessTypeUser,
 				SubjectID: userID,
 			})
 			return next(c)
@@ -187,7 +187,7 @@ func (s *RateLimitSuite) TestScopedPrincipalRateLimit_ScopesKeys() {
 }
 
 func (s *RateLimitSuite) TestIPRateLimit_RedisFailureReturns429() {
-	rl := chi_ratelimit.NewRateLimiter(s.redis, nil, nil)
+	rl := yca_ratelimit.NewRateLimiter(s.redis, nil, nil)
 	mw := rl.IPRateLimit("1-M")
 	s.mr.SetError("redis unavailable")
 

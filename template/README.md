@@ -3,7 +3,7 @@
 HTML template rendering for 2Chi projects (transactional email, etc.), built on Go's `html/template`.
 
 ```go
-import chi_template "github.com/yca-software/yca-go-core/template"
+import yca_template "github.com/yca-software/yca-go-core/template"
 ```
 
 ## API
@@ -22,7 +22,7 @@ Templates are loaded from `{templatesPath}/{name}.html`, parsed once, and cached
 ## Example
 
 ```go
-renderer := chi_template.NewHTML("/app/templates/email")
+renderer := yca_template.NewHTML("/app/templates/email")
 
 body, err := renderer.Render("welcome", map[string]string{
     "Name": "Ada",

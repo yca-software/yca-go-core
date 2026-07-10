@@ -1,4 +1,4 @@
-package chi_server
+package yca_server
 
 import (
 	"golang.org/x/sync/errgroup"

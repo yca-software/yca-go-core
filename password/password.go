@@ -1,4 +1,4 @@
-package chi_password
+package yca_password
 
 import (
 	"crypto/rand"

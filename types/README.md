@@ -3,7 +3,7 @@
 Shared Go types for 2Chi projects.
 
 ```go
-import chi_types "github.com/yca-software/yca-go-core/types"
+import yca_types "github.com/yca-software/yca-go-core/types"
 ```
 
 ## Models
@@ -19,7 +19,7 @@ Embedded base structs for domain models and database rows. Use them to keep `id`
 
 ```go
 type User struct {
-    chi_types.ModelBaseWithArchive
+    yca_types.ModelBaseWithArchive
     Email string `json:"email" db:"email"`
 }
 ```
@@ -50,11 +50,11 @@ Use `organizationId` in JWT payloads — never `workspaceId`.
 ### Example
 
 ```go
-info := chi_types.AccessInfo{
-    Type:      chi_types.AccessTypeUser,
+info := yca_types.AccessInfo{
+    Type:      yca_types.AccessTypeUser,
     SubjectID: userID,
     Email:     "ada@example.com",
-    Roles: []chi_types.JWTAccessTokenPermissionData{
+    Roles: []yca_types.JWTAccessTokenPermissionData{
         {
             OrganizationID: orgID,
             Permissions:    []string{"members:read", "org:write"},
@@ -79,11 +79,11 @@ WGS84 (SRID 4326) types for PostGIS `geography` / `geometry` columns. Both imple
 ### Example
 
 ```go
-p := chi_types.Point{Lng: 2.3522, Lat: 48.8566}
+p := yca_types.Point{Lng: 2.3522, Lat: 48.8566}
 
 val, err := p.Value() // "SRID=4326;POINT(2.3522 48.8566)"
 
-var scanned chi_types.Point
+var scanned yca_types.Point
 err = scanned.Scan(hexEWKBFromDB)
 ```
 
@@ -104,7 +104,7 @@ type User struct {
     Name string `json:"name"`
 }
 
-resp := chi_types.PaginatedListResponse[User]{
+resp := yca_types.PaginatedListResponse[User]{
     Items:   users,
     HasNext: len(users) == pageSize,
 }

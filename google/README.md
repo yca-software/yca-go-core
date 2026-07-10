@@ -3,28 +3,28 @@
 Google integrations for 2Chi projects: OAuth sign-in and Places / location helpers.
 
 ```go
-import chi_google "github.com/yca-software/yca-go-core/google"
+import yca_google "github.com/yca-software/yca-go-core/google"
 ```
 
 Subpackages hold service interfaces, types, and mocks:
 
 ```go
 import (
-    chi_google_maps "github.com/yca-software/yca-go-core/google/maps"
-    chi_google_oauth "github.com/yca-software/yca-go-core/google/oauth"
+    yca_google_maps "github.com/yca-software/yca-go-core/google/maps"
+    yca_google_oauth "github.com/yca-software/yca-go-core/google/oauth"
 )
 ```
 
 ## Setup
 
 ```go
-mod := chi_google.New(chi_google.Config{
-    OAuth: &chi_google_oauth.OAuthConfig{
+mod := yca_google.New(yca_google.Config{
+    OAuth: &yca_google_oauth.OAuthConfig{
         ClientID:     cfg.GoogleClientID,
         ClientSecret: cfg.GoogleClientSecret,
         RedirectURL:  cfg.GoogleRedirectURL,
     },
-    Maps: &chi_google_maps.MapsConfig{
+    Maps: &yca_google_maps.MapsConfig{
         APIKey: cfg.GoogleMapsAPIKey,
     },
     HTTPClient: httpClient,

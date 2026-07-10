@@ -1,4 +1,4 @@
-package chi_types
+package yca_types
 
 type PaginatedListResponse[T any] struct {
 	Items   []T  `json:"items"`

@@ -1,4 +1,4 @@
-package chi_template
+package yca_template
 
 import (
 	"bytes"
@@ -24,14 +24,14 @@ func (r *HTML) Render(name string, data any) (string, error) {
 		return "", fmt.Errorf("invalid template name: %q", name)
 	}
 
-	path := filepath.Join(r.templatesPath, name+".html")
-	rel, err := filepath.Rel(r.templatesPath, path)
+	pagePath := filepath.Join(r.templatesPath, name+".html")
+	rel, err := filepath.Rel(r.templatesPath, pagePath)
 	if err != nil || strings.HasPrefix(rel, "..") {
 		return "", fmt.Errorf("invalid template name: %q", name)
 	}
 
 	templateName := fmt.Sprintf("%s.html", name)
-	tmpl, err := r.loadTemplate(name, templateName, path)
+	tmpl, err := r.loadTemplate(name, templateName, pagePath)
 	if err != nil {
 		return "", err
 	}
@@ -44,19 +44,40 @@ func (r *HTML) Render(name string, data any) (string, error) {
 	return buf.String(), nil
 }
 
-func (r *HTML) loadTemplate(name, templateName, path string) (*template.Template, error) {
+func (r *HTML) loadTemplate(name, templateName, pagePath string) (*template.Template, error) {
 	if cached, ok := r.cache.Load(name); ok {
 		return cached.(*template.Template), nil
 	}
 
-	htmlData, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("read template: %w", err)
+	layoutPath := filepath.Join(r.templatesPath, "_layout.html")
+	layoutRel, layoutErr := filepath.Rel(r.templatesPath, layoutPath)
+	hasLayout := layoutErr == nil && !strings.HasPrefix(layoutRel, "..")
+	if hasLayout {
+		if _, err := os.Stat(layoutPath); err != nil {
+			hasLayout = false
+		}
 	}
 
-	tmpl, err := template.New(templateName).Parse(string(htmlData))
-	if err != nil {
-		return nil, fmt.Errorf("parse template %q: %w", name, err)
+	var tmpl *template.Template
+	var err error
+	if hasLayout {
+		if _, err = os.Stat(pagePath); err != nil {
+			return nil, fmt.Errorf("read template: %w", err)
+		}
+		tmpl, err = template.New(templateName).ParseFiles(layoutPath, pagePath)
+		if err != nil {
+			return nil, fmt.Errorf("parse template %q: %w", name, err)
+		}
+	} else {
+		var htmlData []byte
+		htmlData, err = os.ReadFile(pagePath)
+		if err != nil {
+			return nil, fmt.Errorf("read template: %w", err)
+		}
+		tmpl, err = template.New(templateName).Parse(string(htmlData))
+		if err != nil {
+			return nil, fmt.Errorf("parse template %q: %w", name, err)
+		}
 	}
 
 	actual, _ := r.cache.LoadOrStore(name, tmpl)

@@ -1,4 +1,4 @@
-package chi_localizer
+package yca_localizer
 
 import (
 	"encoding/json"

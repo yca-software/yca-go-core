@@ -1,4 +1,4 @@
-package chi_google_maps
+package yca_google_maps
 
 type Point struct {
 	Lat float64 `json:"lat"`

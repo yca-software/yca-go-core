@@ -3,7 +3,7 @@
 Argon2id password hashing and verification for 2Chi projects.
 
 ```go
-import chi_password "github.com/yca-software/yca-go-core/password"
+import yca_password "github.com/yca-software/yca-go-core/password"
 ```
 
 ## API
@@ -41,13 +41,13 @@ Each call to `Hash` generates a fresh random salt, so the same password produces
 ## Example
 
 ```go
-hash, err := chi_password.Hash("my-secure-password")
+hash, err := yca_password.Hash("my-secure-password")
 if err != nil {
     return err
 }
 
 // Store hash in your database, then verify on login:
-if chi_password.Compare("my-secure-password", hash) {
+if yca_password.Compare("my-secure-password", hash) {
     // password matches
 }
 ```

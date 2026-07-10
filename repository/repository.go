@@ -1,4 +1,4 @@
-package chi_repository
+package yca_repository
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
-	chi_observer "github.com/yca-software/yca-go-core/observer"
+	yca_observer "github.com/yca-software/yca-go-core/observer"
 )
 
 var ErrConditionRequired = errors.New("repository: condition is required for Get, Delete, and Update")
@@ -48,10 +48,10 @@ type repository[T any] struct {
 	exec      Executor
 	tableName string
 	columns   []string
-	metrics   chi_observer.QueryMetricsHook
+	metrics   yca_observer.QueryMetricsHook
 }
 
-func NewRepository[T any](db *sqlx.DB, tableName string, columns []string, hook chi_observer.QueryMetricsHook) Repository[T] {
+func NewRepository[T any](db *sqlx.DB, tableName string, columns []string, hook yca_observer.QueryMetricsHook) Repository[T] {
 	if db == nil {
 		panic("repository: db must not be nil")
 	}

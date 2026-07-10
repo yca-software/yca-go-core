@@ -1,4 +1,4 @@
-package chi_google_maps
+package yca_google_maps
 
 import (
 	"context"
@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/bradfitz/latlong"
-	chi_error "github.com/yca-software/yca-go-core/error"
-	chi_logger "github.com/yca-software/yca-go-core/logger"
+	yca_error "github.com/yca-software/yca-go-core/error"
+	yca_logger "github.com/yca-software/yca-go-core/logger"
 )
 
 type MapsConfig struct {
@@ -33,10 +33,10 @@ type Maps interface {
 type mapsService struct {
 	apiKey     string
 	httpClient *http.Client
-	logger     chi_logger.Logger
+	logger     yca_logger.Logger
 }
 
-func NewMapsService(cfg MapsConfig, httpClient *http.Client, logger chi_logger.Logger) Maps {
+func NewMapsService(cfg MapsConfig, httpClient *http.Client, logger yca_logger.Logger) Maps {
 	return &mapsService{
 		apiKey:     cfg.APIKey,
 		httpClient: httpClient,
@@ -63,19 +63,19 @@ func (s *mapsService) AutocompleteLocation(ctx context.Context, input string) (*
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiURL+"?"+params.Encode(), nil)
 	if err != nil {
-		return nil, chi_error.NewInternalServerError(err, "", nil)
+		return nil, yca_error.NewInternalServerError(err, "", nil)
 	}
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
 		s.logError(ctx, "AutocompleteLocation", "request failed", err)
-		return nil, chi_error.NewInternalServerError(err, "", nil)
+		return nil, yca_error.NewInternalServerError(err, "", nil)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, chi_error.NewInternalServerError(err, "", nil)
+		return nil, yca_error.NewInternalServerError(err, "", nil)
 	}
 
 	var googleResponse GooglePlacesAutocompleteResponse
@@ -85,11 +85,11 @@ func (s *mapsService) AutocompleteLocation(ctx context.Context, input string) (*
 		if err := json.Unmarshal(body, &googleResponse); err == nil && googleResponse.ErrorMessage != "" {
 			return nil, s.errorForPlacesStatus(googleResponse.Status)
 		}
-		return nil, chi_error.NewServiceUnavailableError(errors.New("location search unavailable"), "LocationSearchUnavailable", nil)
+		return nil, yca_error.NewServiceUnavailableError(errors.New("location search unavailable"), "LocationSearchUnavailable", nil)
 	}
 
 	if err := json.Unmarshal(body, &googleResponse); err != nil {
-		return nil, chi_error.NewInternalServerError(err, "LocationSearchProcessingErr", nil)
+		return nil, yca_error.NewInternalServerError(err, "LocationSearchProcessingErr", nil)
 	}
 
 	switch googleResponse.Status {
@@ -117,7 +117,7 @@ func (s *mapsService) AutocompleteLocation(ctx context.Context, input string) (*
 
 func (s *mapsService) GetPlaceDetails(ctx context.Context, placeID string) (*PlaceDetailsResponse, error) {
 	if placeID == "" {
-		return nil, chi_error.NewBadRequestError(errors.New("place ID is required"), "", nil)
+		return nil, yca_error.NewBadRequestError(errors.New("place ID is required"), "", nil)
 	}
 
 	apiURL := "https://maps.googleapis.com/maps/api/place/details/json"
@@ -128,35 +128,35 @@ func (s *mapsService) GetPlaceDetails(ctx context.Context, placeID string) (*Pla
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiURL+"?"+params.Encode(), nil)
 	if err != nil {
-		return nil, chi_error.NewInternalServerError(err, "", nil)
+		return nil, yca_error.NewInternalServerError(err, "", nil)
 	}
 
 	resp, err := s.httpClient.Do(req)
 	if err != nil {
 		s.logError(ctx, "GetPlaceDetails", "request failed", err)
-		return nil, chi_error.NewInternalServerError(err, "", nil)
+		return nil, yca_error.NewInternalServerError(err, "", nil)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, chi_error.NewInternalServerError(err, "", nil)
+		return nil, yca_error.NewInternalServerError(err, "", nil)
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		s.logError(ctx, "GetPlaceDetails", fmt.Sprintf("status %d: %s", resp.StatusCode, string(body)), nil)
-		return nil, chi_error.NewInternalServerError(errors.New("place details unavailable"), "", nil)
+		return nil, yca_error.NewInternalServerError(errors.New("place details unavailable"), "", nil)
 	}
 
 	var googleResponse GooglePlacesDetailsResponse
 
 	if err := json.Unmarshal(body, &googleResponse); err != nil {
-		return nil, chi_error.NewInternalServerError(err, "", nil)
+		return nil, yca_error.NewInternalServerError(err, "", nil)
 	}
 
 	if googleResponse.Status != "OK" {
 		s.logError(ctx, "GetPlaceDetails", fmt.Sprintf("places status %s: %s", googleResponse.Status, googleResponse.ErrorMessage), nil)
-		return nil, chi_error.NewInternalServerError(errors.New(googleResponse.ErrorMessage), "", nil)
+		return nil, yca_error.NewInternalServerError(errors.New(googleResponse.ErrorMessage), "", nil)
 	}
 
 	addressComponents := make([]AddressComponent, len(googleResponse.Result.AddressComponents))
@@ -233,18 +233,18 @@ func detectTimezone(lat, lng float64) string {
 	return timezoneName
 }
 
-func (s *mapsService) errorForPlacesStatus(status string) *chi_error.Error {
+func (s *mapsService) errorForPlacesStatus(status string) *yca_error.Error {
 	switch status {
 	case "INVALID_REQUEST":
-		return chi_error.NewBadRequestError(errors.New("invalid request"), "LocationSearchInvalidQuery", nil)
+		return yca_error.NewBadRequestError(errors.New("invalid request"), "LocationSearchInvalidQuery", nil)
 	case "OVER_QUERY_LIMIT":
-		return chi_error.NewBadRequestError(errors.New("over query limit"), "LocationSearchTemporaryError", nil)
+		return yca_error.NewBadRequestError(errors.New("over query limit"), "LocationSearchTemporaryError", nil)
 	case "REQUEST_DENIED":
-		return chi_error.NewBadRequestError(errors.New("request denied"), "LocationSearchDenied", nil)
+		return yca_error.NewBadRequestError(errors.New("request denied"), "LocationSearchDenied", nil)
 	case "UNKNOWN_ERROR":
-		return chi_error.NewInternalServerError(errors.New("unknown error"), "", nil)
+		return yca_error.NewInternalServerError(errors.New("unknown error"), "", nil)
 	default:
-		return chi_error.NewServiceUnavailableError(errors.New("location search unavailable"), "LocationSearchUnavailable", nil)
+		return yca_error.NewServiceUnavailableError(errors.New("location search unavailable"), "LocationSearchUnavailable", nil)
 	}
 }
 

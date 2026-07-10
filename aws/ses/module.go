@@ -1,4 +1,4 @@
-package chi_aws_ses
+package yca_aws_ses
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package chi_jsonb
+package yca_jsonb
 
 import (
 	"database/sql/driver"

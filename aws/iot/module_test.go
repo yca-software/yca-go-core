@@ -1,4 +1,4 @@
-package chi_aws_iot
+package yca_aws_iot
 
 import (
 	"testing"

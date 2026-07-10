@@ -1,4 +1,4 @@
-package chi_token
+package yca_token
 
 import (
 	"crypto/hmac"

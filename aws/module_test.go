@@ -1,12 +1,12 @@
-package chi_aws
+package yca_aws
 
 import (
 	"context"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	chi_aws_iot "github.com/yca-software/yca-go-core/aws/iot"
-	chi_aws_ses "github.com/yca-software/yca-go-core/aws/ses"
+	yca_aws_iot "github.com/yca-software/yca-go-core/aws/iot"
+	yca_aws_ses "github.com/yca-software/yca-go-core/aws/ses"
 )
 
 type ModuleSuite struct {
@@ -41,7 +41,7 @@ func (s *ModuleSuite) TestLoadSDKConfig_SESOverridesRootConfig() {
 	awsCfg, err := loadSDKConfig(context.Background(), Config{
 		Region:   "eu-central-1",
 		Endpoint: "http://localhost:4566",
-		SES: &chi_aws_ses.Config{
+		SES: &yca_aws_ses.Config{
 			Region:   "us-east-1",
 			Endpoint: "http://localhost:4570",
 		},
@@ -55,7 +55,7 @@ func (s *ModuleSuite) TestLoadSDKConfig_SESOverridesRootConfig() {
 func (s *ModuleSuite) TestLoadSDKConfig_IoTUsesIoTRegion() {
 	awsCfg, err := loadSDKConfig(context.Background(), Config{
 		Region: "us-east-1",
-		IoT: &chi_aws_iot.Config{
+		IoT: &yca_aws_iot.Config{
 			Region: "eu-west-1",
 		},
 	}, serviceIoT)

@@ -1,4 +1,4 @@
-package chi_types
+package yca_types
 
 import "github.com/google/uuid"
 

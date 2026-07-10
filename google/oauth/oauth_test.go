@@ -1,4 +1,4 @@
-package chi_google_oauth_test
+package yca_google_oauth_test
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	chi_google_oauth "github.com/yca-software/yca-go-core/google/oauth"
+	yca_google_oauth "github.com/yca-software/yca-go-core/google/oauth"
 )
 
 type OAuthSuite struct {
@@ -22,9 +22,9 @@ func TestOAuthSuite(t *testing.T) {
 }
 
 func (s *OAuthSuite) TestOAuthConfig_Enabled() {
-	s.False((chi_google_oauth.OAuthConfig{}).Enabled())
-	s.False((chi_google_oauth.OAuthConfig{ClientID: "id"}).Enabled())
-	s.True((chi_google_oauth.OAuthConfig{
+	s.False((yca_google_oauth.OAuthConfig{}).Enabled())
+	s.False((yca_google_oauth.OAuthConfig{ClientID: "id"}).Enabled())
+	s.True((yca_google_oauth.OAuthConfig{
 		ClientID:     "id",
 		ClientSecret: "secret",
 		RedirectURL:  "http://localhost/callback",
@@ -41,7 +41,7 @@ func (s *OAuthSuite) TestGetUserInfo_success() {
 			})
 			return rec.Result(), nil
 		}
-		_ = json.NewEncoder(rec).Encode(chi_google_oauth.UserInfo{
+		_ = json.NewEncoder(rec).Encode(yca_google_oauth.UserInfo{
 			ID:            "google-user-1",
 			Email:         "ada@example.com",
 			VerifiedEmail: true,
@@ -50,7 +50,7 @@ func (s *OAuthSuite) TestGetUserInfo_success() {
 		return rec.Result(), nil
 	})}
 
-	svc := chi_google_oauth.NewOAuthService(chi_google_oauth.OAuthConfig{
+	svc := yca_google_oauth.NewOAuthService(yca_google_oauth.OAuthConfig{
 		ClientID:     "client-id",
 		ClientSecret: "client-secret",
 		RedirectURL:  "http://localhost/callback",

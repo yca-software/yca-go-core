@@ -1,4 +1,4 @@
-package chi_repository
+package yca_repository
 
 import (
 	"context"

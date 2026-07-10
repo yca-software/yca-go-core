@@ -1,4 +1,4 @@
-package chi_paddle_transaction
+package yca_paddle_transaction
 
 import (
 	"context"

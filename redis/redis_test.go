@@ -1,4 +1,4 @@
-package chi_redis_test
+package yca_redis_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	miniredis "github.com/alicebob/miniredis/v2"
 	"github.com/stretchr/testify/suite"
 
-	chi_redis "github.com/yca-software/yca-go-core/redis"
+	yca_redis "github.com/yca-software/yca-go-core/redis"
 )
 
 type RedisSuite struct {
@@ -36,7 +36,7 @@ func (s *RedisSuite) TearDownSuite() {
 }
 
 func (s *RedisSuite) TestNewRedis_success() {
-	r, err := chi_redis.NewRedis(chi_redis.RedisClientConfig{DSN: s.redisDSN})
+	r, err := yca_redis.NewRedis(yca_redis.RedisClientConfig{DSN: s.redisDSN})
 	s.Require().NoError(err)
 	s.Require().NotNil(r)
 	s.Require().NotNil(r.GetClient())
@@ -49,7 +49,7 @@ func (s *RedisSuite) TestNewRedis_success() {
 }
 
 func (s *RedisSuite) TestNewRedis_invalidDSN() {
-	r, err := chi_redis.NewRedis(chi_redis.RedisClientConfig{DSN: "::not-a-redis-url"})
+	r, err := yca_redis.NewRedis(yca_redis.RedisClientConfig{DSN: "::not-a-redis-url"})
 	s.Error(err)
 	s.Nil(r)
 }

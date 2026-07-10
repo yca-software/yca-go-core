@@ -1,4 +1,4 @@
-package chi_error
+package yca_error
 
 import (
 	"errors"

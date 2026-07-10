@@ -1,4 +1,4 @@
-package chi_logger_test
+package yca_logger_test
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	chi_logger "github.com/yca-software/yca-go-core/logger"
+	yca_logger "github.com/yca-software/yca-go-core/logger"
 )
 
 // LoggerSuite exercises the production [logger.New] implementation with a
@@ -30,9 +30,9 @@ func (s *LoggerSuite) SetupTest() {
 	s.buf = &bytes.Buffer{}
 }
 
-func (s *LoggerSuite) newLogger(cfg chi_logger.LoggerConfig) chi_logger.Logger {
+func (s *LoggerSuite) newLogger(cfg yca_logger.LoggerConfig) yca_logger.Logger {
 	cfg.Output = s.buf
-	return chi_logger.New(cfg)
+	return yca_logger.New(cfg)
 }
 
 func (s *LoggerSuite) lastJSON() map[string]any {
@@ -59,7 +59,7 @@ func (s *LoggerSuite) allJSON() []map[string]any {
 }
 
 func (s *LoggerSuite) TestNew_TextDefault_InfoLevel() {
-	l := s.newLogger(chi_logger.LoggerConfig{OutputType: "text"})
+	l := s.newLogger(yca_logger.LoggerConfig{OutputType: "text"})
 	l.Info("hello", "k", "v")
 	body := s.buf.String()
 	s.Contains(body, "hello")
@@ -71,19 +71,19 @@ func (s *LoggerSuite) TestNew_Threshold_DebugWarnErrorDefault() {
 	cases := []struct {
 		name     string
 		cfgLevel string
-		logFn    func(chi_logger.Logger)
+		logFn    func(yca_logger.Logger)
 		want     string
 	}{
-		{"debug_upper", "DEBUG", func(l chi_logger.Logger) { l.Debug("x") }, "DEBUG"},
-		{"warn", "warn", func(l chi_logger.Logger) { l.Warn("w") }, "WARN"},
-		{"error", "error", func(l chi_logger.Logger) { l.Error("e") }, "ERROR"},
-		{"default_info_empty", "", func(l chi_logger.Logger) { l.Info("i") }, "INFO"},
-		{"default_info_unknown", "verbose", func(l chi_logger.Logger) { l.Info("i") }, "INFO"},
+		{"debug_upper", "DEBUG", func(l yca_logger.Logger) { l.Debug("x") }, "DEBUG"},
+		{"warn", "warn", func(l yca_logger.Logger) { l.Warn("w") }, "WARN"},
+		{"error", "error", func(l yca_logger.Logger) { l.Error("e") }, "ERROR"},
+		{"default_info_empty", "", func(l yca_logger.Logger) { l.Info("i") }, "INFO"},
+		{"default_info_unknown", "verbose", func(l yca_logger.Logger) { l.Info("i") }, "INFO"},
 	}
 	for _, tc := range cases {
 		s.Run(tc.name, func() {
 			s.buf.Reset()
-			l := s.newLogger(chi_logger.LoggerConfig{
+			l := s.newLogger(yca_logger.LoggerConfig{
 				OutputType:     "json",
 				ThresholdLevel: tc.cfgLevel,
 			})
@@ -94,7 +94,7 @@ func (s *LoggerSuite) TestNew_Threshold_DebugWarnErrorDefault() {
 }
 
 func (s *LoggerSuite) TestNew_Threshold_FiltersDebugWhenInfo() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType:     "json",
 		ThresholdLevel: "info",
 	})
@@ -105,7 +105,7 @@ func (s *LoggerSuite) TestNew_Threshold_FiltersDebugWhenInfo() {
 }
 
 func (s *LoggerSuite) TestNew_JSONStructuredFields() {
-	l := s.newLogger(chi_logger.LoggerConfig{OutputType: "json"})
+	l := s.newLogger(yca_logger.LoggerConfig{OutputType: "json"})
 	l.Info("m", "n", 42, "ok", true)
 	rec := s.lastJSON()
 	s.Equal("m", rec["msg"])
@@ -114,7 +114,7 @@ func (s *LoggerSuite) TestNew_JSONStructuredFields() {
 }
 
 func (s *LoggerSuite) TestNew_Debug_AddsSourceField() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType:     "json",
 		ThresholdLevel: "debug",
 	})
@@ -125,14 +125,14 @@ func (s *LoggerSuite) TestNew_Debug_AddsSourceField() {
 }
 
 func (s *LoggerSuite) TestNew_Output_NilWriterUsesStdoutDoesNotPanic() {
-	l := chi_logger.New(chi_logger.LoggerConfig{OutputType: "json"})
+	l := yca_logger.New(yca_logger.LoggerConfig{OutputType: "json"})
 	s.NotNil(l)
 	l.Info("smoke")
 }
 
 func (s *LoggerSuite) TestNew_Output_ExplicitWriter() {
 	var buf bytes.Buffer
-	l := chi_logger.New(chi_logger.LoggerConfig{
+	l := yca_logger.New(yca_logger.LoggerConfig{
 		Output:     &buf,
 		OutputType: "json",
 	})
@@ -141,7 +141,7 @@ func (s *LoggerSuite) TestNew_Output_ExplicitWriter() {
 }
 
 func (s *LoggerSuite) TestNew_AllLevelsWhenDebug() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType:     "json",
 		ThresholdLevel: "debug",
 	})
@@ -158,7 +158,7 @@ func (s *LoggerSuite) TestNew_AllLevelsWhenDebug() {
 }
 
 func (s *LoggerSuite) TestNew_Redaction_NilPassesThrough() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
 		Redaction:  nil,
 	})
@@ -168,34 +168,34 @@ func (s *LoggerSuite) TestNew_Redaction_NilPassesThrough() {
 }
 
 func (s *LoggerSuite) TestNew_Redaction_KeyMatchLowercasesAttributeKey() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
-		Redaction: &chi_logger.RedactionConfig{
+		Redaction: &yca_logger.RedactionConfig{
 			Keys: []string{"password"},
 		},
 	})
 	l.Info("m", "Password", "x")
 	rec := s.lastJSON()
-	s.Equal(chi_logger.DEFAULT_REDACTED_PLACEHOLDER, rec["Password"])
+	s.Equal(yca_logger.DEFAULT_REDACTED_PLACEHOLDER, rec["Password"])
 }
 
 func (s *LoggerSuite) TestNew_Redaction_EmptyPlaceholderUsesDefault() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
-		Redaction: &chi_logger.RedactionConfig{
+		Redaction: &yca_logger.RedactionConfig{
 			Keys:                []string{"token"},
 			RedactedPlaceholder: "",
 		},
 	})
 	l.Info("m", "token", "abc")
 	rec := s.lastJSON()
-	s.Equal(chi_logger.DEFAULT_REDACTED_PLACEHOLDER, rec["token"])
+	s.Equal(yca_logger.DEFAULT_REDACTED_PLACEHOLDER, rec["token"])
 }
 
 func (s *LoggerSuite) TestNew_Redaction_CustomPlaceholder() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
-		Redaction: &chi_logger.RedactionConfig{
+		Redaction: &yca_logger.RedactionConfig{
 			Keys:                []string{"api_key"},
 			RedactedPlaceholder: "***",
 		},
@@ -207,21 +207,21 @@ func (s *LoggerSuite) TestNew_Redaction_CustomPlaceholder() {
 
 func (s *LoggerSuite) TestNew_Redaction_ValueRegex() {
 	re := regexp.MustCompile(`Bearer\s+\S+`)
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
-		Redaction: &chi_logger.RedactionConfig{
+		Redaction: &yca_logger.RedactionConfig{
 			ValueRegexes: []*regexp.Regexp{re},
 		},
 	})
 	l.Info("m", "Authorization", "Bearer abc.def")
 	rec := s.lastJSON()
-	s.Equal(chi_logger.DEFAULT_REDACTED_PLACEHOLDER, rec["Authorization"])
+	s.Equal(yca_logger.DEFAULT_REDACTED_PLACEHOLDER, rec["Authorization"])
 }
 
 func (s *LoggerSuite) TestNew_Redaction_ErrorAttrUsesErrorString() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
-		Redaction: &chi_logger.RedactionConfig{
+		Redaction: &yca_logger.RedactionConfig{
 			Keys: []string{"password"},
 		},
 	})
@@ -232,9 +232,9 @@ func (s *LoggerSuite) TestNew_Redaction_ErrorAttrUsesErrorString() {
 }
 
 func (s *LoggerSuite) TestNew_Redaction_DoesNotRewriteSlogBaseKeys() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
-		Redaction: &chi_logger.RedactionConfig{
+		Redaction: &yca_logger.RedactionConfig{
 			Keys: []string{"time", "level", "msg", "source"},
 		},
 	})
@@ -246,27 +246,27 @@ func (s *LoggerSuite) TestNew_Redaction_DoesNotRewriteSlogBaseKeys() {
 }
 
 func (s *LoggerSuite) TestDefaultRedactionConfig_Shape() {
-	cfg := chi_logger.DefaultRedactionConfig()
+	cfg := yca_logger.DefaultRedactionConfig()
 	s.NotEmpty(cfg.Keys)
 	s.NotEmpty(cfg.ValueRegexes)
-	s.Equal(chi_logger.DEFAULT_REDACTED_PLACEHOLDER, cfg.RedactedPlaceholder)
+	s.Equal(yca_logger.DEFAULT_REDACTED_PLACEHOLDER, cfg.RedactedPlaceholder)
 }
 
 func (s *LoggerSuite) TestDefaultRedactionConfig_BearerAndQueryString() {
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType: "json",
-		Redaction:  chi_logger.DefaultRedactionConfig(),
+		Redaction:  yca_logger.DefaultRedactionConfig(),
 	})
 	l.Info("a", "hdr", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
 	l.Info("b", "query", "next=/x&password=secret123&ok=1")
 	recs := s.allJSON()
 	s.Require().Len(recs, 2)
-	s.Equal(chi_logger.DEFAULT_REDACTED_PLACEHOLDER, recs[0]["hdr"])
-	s.Equal(chi_logger.DEFAULT_REDACTED_PLACEHOLDER, recs[1]["query"])
+	s.Equal(yca_logger.DEFAULT_REDACTED_PLACEHOLDER, recs[0]["hdr"])
+	s.Equal(yca_logger.DEFAULT_REDACTED_PLACEHOLDER, recs[1]["query"])
 }
 
 func (s *LoggerSuite) TestWith_ChainsStaticAttributes() {
-	l := s.newLogger(chi_logger.LoggerConfig{OutputType: "json"})
+	l := s.newLogger(yca_logger.LoggerConfig{OutputType: "json"})
 	l.With("svc", "api").With("region", "eu").Info("rolled")
 	rec := s.lastJSON()
 	s.Equal("api", rec["svc"])
@@ -276,7 +276,7 @@ func (s *LoggerSuite) TestWith_ChainsStaticAttributes() {
 
 func (s *LoggerSuite) TestWithContext_NilContext_NoFields() {
 	ext := func(context.Context) map[string]any { return map[string]any{"rid": "1"} }
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType:       "json",
 		ContextExtractor: ext,
 	})
@@ -288,7 +288,7 @@ func (s *LoggerSuite) TestWithContext_NilContext_NoFields() {
 }
 
 func (s *LoggerSuite) TestWithContext_NilExtractor_NoFields() {
-	l := s.newLogger(chi_logger.LoggerConfig{OutputType: "json"})
+	l := s.newLogger(yca_logger.LoggerConfig{OutputType: "json"})
 	ctx := context.WithValue(context.Background(), struct{ k string }{"k"}, "v")
 	l.WithContext(ctx).Info("x")
 	rec := s.lastJSON()
@@ -297,7 +297,7 @@ func (s *LoggerSuite) TestWithContext_NilExtractor_NoFields() {
 
 func (s *LoggerSuite) TestWithContext_EmptyMap_NoFields() {
 	ext := func(context.Context) map[string]any { return map[string]any{} }
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType:       "json",
 		ContextExtractor: ext,
 	})
@@ -310,7 +310,7 @@ func (s *LoggerSuite) TestWithContext_MergesExtractorFields() {
 	ext := func(context.Context) map[string]any {
 		return map[string]any{"request_id": "abc"}
 	}
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType:       "json",
 		ContextExtractor: ext,
 	})
@@ -324,7 +324,7 @@ func (s *LoggerSuite) TestWith_ThenWithContext_Combines() {
 	ext := func(context.Context) map[string]any {
 		return map[string]any{"rid": "r1"}
 	}
-	l := s.newLogger(chi_logger.LoggerConfig{
+	l := s.newLogger(yca_logger.LoggerConfig{
 		OutputType:       "json",
 		ContextExtractor: ext,
 	})
@@ -335,7 +335,7 @@ func (s *LoggerSuite) TestWith_ThenWithContext_Combines() {
 }
 
 func (s *LoggerSuite) TestDiscardWriter_NoOutput() {
-	l := chi_logger.New(chi_logger.LoggerConfig{
+	l := yca_logger.New(yca_logger.LoggerConfig{
 		Output:     io.Discard,
 		OutputType: "json",
 	})

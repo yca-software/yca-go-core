@@ -1,4 +1,4 @@
-package chi_paddle
+package yca_paddle
 
 import (
 	"crypto/hmac"

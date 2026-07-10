@@ -1,4 +1,4 @@
-package chi_google_oauth
+package yca_google_oauth
 
 import (
 	"context"

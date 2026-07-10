@@ -1,4 +1,4 @@
-package chi_ratelimit
+package yca_ratelimit
 
 import (
 	"fmt"
@@ -7,21 +7,21 @@ import (
 	redisclient "github.com/redis/go-redis/v9"
 	"github.com/ulule/limiter/v3"
 	redisstore "github.com/ulule/limiter/v3/drivers/store/redis"
-	chi_error "github.com/yca-software/yca-go-core/error"
-	chi_logger "github.com/yca-software/yca-go-core/logger"
-	chi_observer "github.com/yca-software/yca-go-core/observer"
-	chi_types "github.com/yca-software/yca-go-core/types"
+	yca_error "github.com/yca-software/yca-go-core/error"
+	yca_logger "github.com/yca-software/yca-go-core/logger"
+	yca_observer "github.com/yca-software/yca-go-core/observer"
+	yca_types "github.com/yca-software/yca-go-core/types"
 )
 
 // RateLimiter is a factory that generates Echo rate-limiting middlewares.
 type RateLimiter struct {
 	redisClient *redisclient.Client
-	observer    *chi_observer.Observer
-	logger      chi_logger.Logger
+	observer    *yca_observer.Observer
+	logger      yca_logger.Logger
 }
 
 // NewRateLimiter initializes the factory.
-func NewRateLimiter(rdb *redisclient.Client, obs *chi_observer.Observer, logger chi_logger.Logger) *RateLimiter {
+func NewRateLimiter(rdb *redisclient.Client, obs *yca_observer.Observer, logger yca_logger.Logger) *RateLimiter {
 	return &RateLimiter{
 		redisClient: rdb,
 		observer:    obs,
@@ -57,7 +57,7 @@ func (rl *RateLimiter) build(rate string, keyExtractor func(echo.Context) string
 
 			limiterCtx, err := instance.Get(ctx, key)
 			if err != nil {
-				return chi_error.NewTooManyRequestsError(err, "TooManyRequests", nil)
+				return yca_error.NewTooManyRequestsError(err, "TooManyRequests", nil)
 			}
 
 			c.Response().Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", limiterCtx.Limit))
@@ -74,7 +74,7 @@ func (rl *RateLimiter) build(rate string, keyExtractor func(echo.Context) string
 				if rl.logger != nil {
 					rl.logRateLimitHit(c, principalType, principal, ip)
 				}
-				return chi_error.NewTooManyRequestsError(nil, "TooManyRequests", nil)
+				return yca_error.NewTooManyRequestsError(nil, "TooManyRequests", nil)
 			}
 
 			return next(c)
@@ -90,13 +90,13 @@ func (rl *RateLimiter) logRateLimitHit(c echo.Context, principalType, principal,
 		"client_ip", ip,
 	}
 	switch principalType {
-	case chi_observer.PrincipalTypeUser:
+	case yca_observer.PrincipalTypeUser:
 		args = append(args, "user_id", principal)
-	case chi_observer.PrincipalTypeAPIKey:
+	case yca_observer.PrincipalTypeAPIKey:
 		args = append(args, "api_key_id", principal)
 	}
 	if v := c.Get("accessInfo"); v != nil {
-		if ai, ok := v.(*chi_types.AccessInfo); ok && ai != nil && ai.RequestID != "" {
+		if ai, ok := v.(*yca_types.AccessInfo); ok && ai != nil && ai.RequestID != "" {
 			args = append(args, "request_id", ai.RequestID)
 		}
 	}

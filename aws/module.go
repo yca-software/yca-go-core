@@ -1,14 +1,14 @@
-package chi_aws
+package yca_aws
 
 import (
 	"context"
 
 	aws_sdk "github.com/aws/aws-sdk-go-v2/aws"
 	aws_config "github.com/aws/aws-sdk-go-v2/config"
-	chi_aws_iot "github.com/yca-software/yca-go-core/aws/iot"
-	chi_aws_s3 "github.com/yca-software/yca-go-core/aws/s3"
-	chi_aws_ses "github.com/yca-software/yca-go-core/aws/ses"
-	chi_aws_sqs "github.com/yca-software/yca-go-core/aws/sqs"
+	yca_aws_iot "github.com/yca-software/yca-go-core/aws/iot"
+	yca_aws_s3 "github.com/yca-software/yca-go-core/aws/s3"
+	yca_aws_ses "github.com/yca-software/yca-go-core/aws/ses"
+	yca_aws_sqs "github.com/yca-software/yca-go-core/aws/sqs"
 )
 
 const (
@@ -22,17 +22,17 @@ type Config struct {
 	Region   string
 	Endpoint string
 
-	SES *chi_aws_ses.Config
-	SQS *chi_aws_sqs.Config
-	S3  *chi_aws_s3.Config
-	IoT *chi_aws_iot.Config
+	SES *yca_aws_ses.Config
+	SQS *yca_aws_sqs.Config
+	S3  *yca_aws_s3.Config
+	IoT *yca_aws_iot.Config
 }
 
 type Module struct {
-	SES chi_aws_ses.SES
-	SQS chi_aws_sqs.SQS
-	S3  chi_aws_s3.S3
-	IoT chi_aws_iot.IoT
+	SES yca_aws_ses.SES
+	SQS yca_aws_sqs.SQS
+	S3  yca_aws_s3.S3
+	IoT yca_aws_iot.IoT
 }
 
 func New(ctx context.Context, cfg Config) (*Module, error) {
@@ -43,7 +43,7 @@ func New(ctx context.Context, cfg Config) (*Module, error) {
 		if err != nil {
 			return nil, err
 		}
-		m.SES = chi_aws_ses.NewSESClient(awsCfg, *cfg.SES)
+		m.SES = yca_aws_ses.NewSESClient(awsCfg, *cfg.SES)
 	}
 
 	if cfg.S3 != nil && cfg.S3.Enabled() {
@@ -51,7 +51,7 @@ func New(ctx context.Context, cfg Config) (*Module, error) {
 		if err != nil {
 			return nil, err
 		}
-		m.S3 = chi_aws_s3.NewS3Client(awsCfg)
+		m.S3 = yca_aws_s3.NewS3Client(awsCfg)
 	}
 
 	if cfg.SQS != nil && cfg.SQS.Enabled() {
@@ -59,7 +59,7 @@ func New(ctx context.Context, cfg Config) (*Module, error) {
 		if err != nil {
 			return nil, err
 		}
-		m.SQS = chi_aws_sqs.NewSQSClient(awsCfg)
+		m.SQS = yca_aws_sqs.NewSQSClient(awsCfg)
 	}
 
 	if cfg.IoT != nil && cfg.IoT.Enabled() {
@@ -67,7 +67,7 @@ func New(ctx context.Context, cfg Config) (*Module, error) {
 		if err != nil {
 			return nil, err
 		}
-		iotClient, err := chi_aws_iot.NewIoTClient(awsCfg)
+		iotClient, err := yca_aws_iot.NewIoTClient(awsCfg)
 		if err != nil {
 			return nil, err
 		}

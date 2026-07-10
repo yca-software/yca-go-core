@@ -6,7 +6,7 @@ Helpers for reading and writing Postgres `jsonb` columns via `database/sql`.
 import (
     "database/sql/driver"
 
-    chi_jsonb "github.com/yca-software/yca-go-core/jsonb"
+    yca_jsonb "github.com/yca-software/yca-go-core/jsonb"
 )
 ```
 
@@ -21,11 +21,11 @@ type Workspace struct {
 type Permissions []string
 
 func (p *Permissions) Scan(value any) error {
-    return chi_jsonb.JSONBScan(value, p)
+    return yca_jsonb.JSONBScan(value, p)
 }
 
 func (p Permissions) Value() (driver.Value, error) {
-    return chi_jsonb.JSONBValue(p)
+    return yca_jsonb.JSONBValue(p)
 }
 ```
 

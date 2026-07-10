@@ -1,10 +1,10 @@
-package chi_token_test
+package yca_token_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	chi_token "github.com/yca-software/yca-go-core/token"
+	yca_token "github.com/yca-software/yca-go-core/token"
 )
 
 type GenerateTestSuite struct {
@@ -16,24 +16,24 @@ func TestGenerateTestSuite(t *testing.T) {
 }
 
 func (s *GenerateTestSuite) TestGenerateOpaqueToken() {
-	token, err := chi_token.GenerateOpaqueToken()
+	token, err := yca_token.GenerateOpaqueToken()
 	s.NoError(err)
 	s.NotEmpty(token)
 	s.NotContains(token, "=")
 }
 
 func (s *GenerateTestSuite) TestGenerateOpaqueToken_ProducesDifferentTokens() {
-	token1, err1 := chi_token.GenerateOpaqueToken()
+	token1, err1 := yca_token.GenerateOpaqueToken()
 	s.NoError(err1)
 
-	token2, err2 := chi_token.GenerateOpaqueToken()
+	token2, err2 := yca_token.GenerateOpaqueToken()
 	s.NoError(err2)
 
 	s.NotEqual(token1, token2, "Each token should be unique")
 }
 
 func (s *GenerateTestSuite) TestGenerateOpaqueToken_NoPadding() {
-	token, err := chi_token.GenerateOpaqueToken()
+	token, err := yca_token.GenerateOpaqueToken()
 	s.NoError(err)
 	s.NotEmpty(token)
 	s.NotContains(token, "=")

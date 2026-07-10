@@ -1,4 +1,4 @@
-package chi_aws_s3
+package yca_aws_s3
 
 import (
 	"net/url"

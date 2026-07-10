@@ -1,10 +1,10 @@
-package chi_validator_test
+package yca_validator_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	chi_validator "github.com/yca-software/yca-go-core/validator"
+	yca_validator "github.com/yca-software/yca-go-core/validator"
 )
 
 type ValidStruct struct {
@@ -21,7 +21,7 @@ type InvalidStruct struct {
 
 type ValidationTestSuite struct {
 	suite.Suite
-	validator chi_validator.Validator
+	validator yca_validator.Validator
 }
 
 func TestValidationTestSuite(t *testing.T) {
@@ -29,11 +29,11 @@ func TestValidationTestSuite(t *testing.T) {
 }
 
 func (s *ValidationTestSuite) SetupTest() {
-	s.validator = chi_validator.New()
+	s.validator = yca_validator.New()
 }
 
 func (s *ValidationTestSuite) TestNew() {
-	validator := chi_validator.New()
+	validator := yca_validator.New()
 	s.NotNil(validator)
 }
 

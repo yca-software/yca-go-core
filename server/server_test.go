@@ -1,4 +1,4 @@
-package chi_server_test
+package yca_server_test
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 
-	chi_server "github.com/yca-software/yca-go-core/server"
+	yca_server "github.com/yca-software/yca-go-core/server"
 )
 
 type stubDep struct {
@@ -35,8 +35,8 @@ func (s *ServerSuite) SetupTest() {
 	s.echo = echo.New()
 }
 
-func testServerConfig(registerRoutes func(e *echo.Echo)) chi_server.ServerConfig {
-	return chi_server.ServerConfig{
+func testServerConfig(registerRoutes func(e *echo.Echo)) yca_server.ServerConfig {
+	return yca_server.ServerConfig{
 		Port:               0,
 		BodyLimit:          "32M",
 		ServerReadTimeout:  30,
@@ -53,12 +53,12 @@ func (s *ServerSuite) get(path string) *httptest.ResponseRecorder {
 	return rec
 }
 
-func (s *ServerSuite) registerHealth(deps ...chi_server.ReadinessDependency) {
-	chi_server.RegisterHealthHandlers(s.echo, deps)
+func (s *ServerSuite) registerHealth(deps ...yca_server.ReadinessDependency) {
+	yca_server.RegisterHealthHandlers(s.echo, deps)
 }
 
 func (s *ServerSuite) TestNew_echoHTTPError_returnsErrorCode() {
-	srv := chi_server.New(testServerConfig(func(e *echo.Echo) {
+	srv := yca_server.New(testServerConfig(func(e *echo.Echo) {
 		e.GET("/missing", func(c echo.Context) error {
 			return echo.ErrNotFound
 		})
@@ -76,7 +76,7 @@ func (s *ServerSuite) TestNew_echoHTTPError_returnsErrorCode() {
 
 func (s *ServerSuite) TestNew_invokesRegisterRoutes() {
 	var registered bool
-	srv := chi_server.New(testServerConfig(func(e *echo.Echo) {
+	srv := yca_server.New(testServerConfig(func(e *echo.Echo) {
 		registered = true
 		e.GET("/ping", func(c echo.Context) error {
 			return c.String(http.StatusOK, "pong")
@@ -87,7 +87,7 @@ func (s *ServerSuite) TestNew_invokesRegisterRoutes() {
 }
 
 func (s *ServerSuite) TestShutdown_onNonStartedServer() {
-	srv := chi_server.New(testServerConfig(nil))
+	srv := yca_server.New(testServerConfig(nil))
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	s.NoError(srv.Shutdown(ctx))
@@ -127,7 +127,7 @@ func (s *ServerSuite) TestReady_allDependenciesPass_returnsOK() {
 }
 
 func (s *ServerSuite) TestRegisterMetricsHandlers() {
-	chi_server.RegisterMetricsHandlers(s.echo)
+	yca_server.RegisterMetricsHandlers(s.echo)
 	rec := s.get("/metrics")
 
 	s.Equal(http.StatusOK, rec.Code)

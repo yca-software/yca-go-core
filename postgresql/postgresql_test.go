@@ -1,4 +1,4 @@
-package chi_postgresql_test
+package yca_postgresql_test
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	chi_postgresql "github.com/yca-software/yca-go-core/postgresql"
+	yca_postgresql "github.com/yca-software/yca-go-core/postgresql"
 )
 
 type PostgreSQLSuite struct {
@@ -54,7 +54,7 @@ func (s *PostgreSQLSuite) TearDownSuite() {
 }
 
 func (s *PostgreSQLSuite) TestNewPostgreSQL_invalidDSN() {
-	pg, err := chi_postgresql.NewPostgreSQL(chi_postgresql.PostgreSQLClientConfig{
+	pg, err := yca_postgresql.NewPostgreSQL(yca_postgresql.PostgreSQLClientConfig{
 		DSN: "postgres://invalid:invalid@127.0.0.1:1/nope?sslmode=disable",
 	})
 	s.Error(err)
@@ -62,7 +62,7 @@ func (s *PostgreSQLSuite) TestNewPostgreSQL_invalidDSN() {
 }
 
 func (s *PostgreSQLSuite) TestNewPostgreSQL_success() {
-	pg, err := chi_postgresql.NewPostgreSQL(chi_postgresql.PostgreSQLClientConfig{
+	pg, err := yca_postgresql.NewPostgreSQL(yca_postgresql.PostgreSQLClientConfig{
 		DSN:             s.testDSN,
 		MaxOpenConns:    5,
 		MaxIdleConns:    2,
@@ -81,7 +81,7 @@ func (s *PostgreSQLSuite) TestNewPostgreSQL_success() {
 }
 
 func (s *PostgreSQLSuite) TestNewPostgreSQL_Check() {
-	pg, err := chi_postgresql.NewPostgreSQL(chi_postgresql.PostgreSQLClientConfig{
+	pg, err := yca_postgresql.NewPostgreSQL(yca_postgresql.PostgreSQLClientConfig{
 		DSN:          s.testDSN,
 		MaxOpenConns: 5,
 		MaxIdleConns: 2,
@@ -94,7 +94,7 @@ func (s *PostgreSQLSuite) TestNewPostgreSQL_Check() {
 }
 
 func (s *PostgreSQLSuite) TestNewPostgreSQL_Check_cancelledContext() {
-	pg, err := chi_postgresql.NewPostgreSQL(chi_postgresql.PostgreSQLClientConfig{
+	pg, err := yca_postgresql.NewPostgreSQL(yca_postgresql.PostgreSQLClientConfig{
 		DSN:          s.testDSN,
 		MaxOpenConns: 5,
 		MaxIdleConns: 2,

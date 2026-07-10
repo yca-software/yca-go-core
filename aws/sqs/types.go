@@ -1,4 +1,4 @@
-package chi_aws_sqs
+package yca_aws_sqs
 
 // QueueMessage is a received SQS message.
 type QueueMessage struct {

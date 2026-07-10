@@ -3,13 +3,13 @@
 Prometheus metrics for 2Chi projects: HTTP, database queries, rate limits, and background jobs.
 
 ```go
-import chi_observer "github.com/yca-software/yca-go-core/observer"
+import yca_observer "github.com/yca-software/yca-go-core/observer"
 ```
 
 ## Setup
 
 ```go
-obs, err := chi_observer.New(chi_observer.ObserverConfig{
+obs, err := yca_observer.New(yca_observer.ObserverConfig{
     Namespace: "myapp",
     AppName:   "api",
 })

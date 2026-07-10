@@ -1,4 +1,4 @@
-package chi_test
+package yca_test
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
-	chi_database "github.com/yca-software/yca-go-core/postgresql"
+	yca_database "github.com/yca-software/yca-go-core/postgresql"
 )
 
 // testWaitTimeout must cover first-boot on slow Docker Desktop hosts.
@@ -186,7 +186,7 @@ func Cleanup() {
 	testOnce = sync.Once{}
 }
 
-func waitForPostgres(ctx context.Context, connStr string) (*chi_database.PostgreSQL, error) {
+func waitForPostgres(ctx context.Context, connStr string) (*yca_database.PostgreSQL, error) {
 	deadline, ok := ctx.Deadline()
 	if !ok {
 		var cancel context.CancelFunc
@@ -197,7 +197,7 @@ func waitForPostgres(ctx context.Context, connStr string) (*chi_database.Postgre
 
 	var lastErr error
 	for time.Now().Before(deadline) {
-		pg, err := chi_database.NewPostgreSQL(chi_database.PostgreSQLClientConfig{
+		pg, err := yca_database.NewPostgreSQL(yca_database.PostgreSQLClientConfig{
 			DSN:          connStr,
 			MaxOpenConns: 2,
 			MaxIdleConns: 1,

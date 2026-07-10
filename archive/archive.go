@@ -1,11 +1,11 @@
-package chi_archive
+package yca_archive
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
-	chi_error "github.com/yca-software/yca-go-core/error"
+	yca_error "github.com/yca-software/yca-go-core/error"
 )
 
 type ArchiveFilter string
@@ -38,7 +38,7 @@ func ParseArchiveFilterQuery(value string) (ArchiveFilter, error) {
 	}
 	filter := ArchiveFilter(value)
 	if filter != ArchiveFilterActive && filter != ArchiveFilterArchived {
-		return "", chi_error.NewBadRequestError(errors.New("invalid archive filter"), "InvalidArchiveFilter", nil)
+		return "", yca_error.NewBadRequestError(errors.New("invalid archive filter"), "InvalidArchiveFilter", nil)
 	}
 	return filter, nil
 }

@@ -1,4 +1,4 @@
-package chi_google_maps
+package yca_google_maps
 
 import (
 	"context"

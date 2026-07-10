@@ -1,4 +1,4 @@
-package chi_logger
+package yca_logger
 
 import (
 	"context"

@@ -1,4 +1,4 @@
-package chi_localizer_test
+package yca_localizer_test
 
 import (
 	"os"
@@ -7,13 +7,13 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	chi_localizer "github.com/yca-software/yca-go-core/localizer"
+	yca_localizer "github.com/yca-software/yca-go-core/localizer"
 )
 
 type LocalizerSuite struct {
 	suite.Suite
 	localesDir string
-	loc        chi_localizer.Localizer
+	loc        yca_localizer.Localizer
 }
 
 func TestLocalizerSuite(t *testing.T) {
@@ -24,12 +24,12 @@ func (s *LocalizerSuite) SetupSuite() {
 	wd, err := os.Getwd()
 	s.Require().NoError(err)
 	s.localesDir = filepath.Join(wd, "testdata", "locales")
-	s.loc = chi_localizer.New([]string{"en", "es", "tr"}, "en", s.localesDir)
+	s.loc = yca_localizer.New([]string{"en", "es", "tr"}, "en", s.localesDir)
 	s.Require().NotNil(s.loc)
 }
 
 func (s *LocalizerSuite) TestNewLocalizer() {
-	loc := chi_localizer.New([]string{"en", "es"}, "en", s.localesDir)
+	loc := yca_localizer.New([]string{"en", "es"}, "en", s.localesDir)
 	s.NotNil(loc)
 }
 

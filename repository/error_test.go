@@ -1,4 +1,4 @@
-package chi_repository_test
+package yca_repository_test
 
 import (
 	"database/sql"
@@ -9,8 +9,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/suite"
 
-	chi_error "github.com/yca-software/yca-go-core/error"
-	chi_repository "github.com/yca-software/yca-go-core/repository"
+	yca_error "github.com/yca-software/yca-go-core/error"
+	yca_repository "github.com/yca-software/yca-go-core/repository"
 )
 
 type ErrorSuite struct {
@@ -23,55 +23,55 @@ func TestErrorSuite(t *testing.T) {
 
 func (s *ErrorSuite) TestNewRepository_NilDB_Panics() {
 	s.Panics(func() {
-		chi_repository.NewRepository[struct{}](nil, "products", []string{"id"}, nil)
+		yca_repository.NewRepository[struct{}](nil, "products", []string{"id"}, nil)
 	})
 }
 
 func (s *ErrorSuite) TestNewRepository_EmptyTableName_Panics() {
 	s.Panics(func() {
-		chi_repository.NewRepository[struct{}](&sqlx.DB{}, "", []string{"id"}, nil)
+		yca_repository.NewRepository[struct{}](&sqlx.DB{}, "", []string{"id"}, nil)
 	})
 }
 
 func (s *ErrorSuite) TestNewRepository_EmptyColumns_Panics() {
 	db := &sqlx.DB{}
 	s.Panics(func() {
-		chi_repository.NewRepository[struct{}](db, "products", nil, nil)
+		yca_repository.NewRepository[struct{}](db, "products", nil, nil)
 	})
 	s.Panics(func() {
-		chi_repository.NewRepository[struct{}](db, "products", []string{}, nil)
+		yca_repository.NewRepository[struct{}](db, "products", []string{}, nil)
 	})
 }
 
 func (s *ErrorSuite) TestWrapSQLError_NilReturnsNil() {
-	s.Nil(chi_repository.WrapSQLError(nil))
+	s.Nil(yca_repository.WrapSQLError(nil))
 }
 
 func (s *ErrorSuite) TestWrapSQLError_ErrNoRows_ReturnsNotFound() {
-	err := chi_repository.WrapSQLError(sql.ErrNoRows)
+	err := yca_repository.WrapSQLError(sql.ErrNoRows)
 	s.Require().Error(err)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(404, apiErr.StatusCode)
 	s.Equal("NotFound", apiErr.ErrorCode)
 }
 
 func (s *ErrorSuite) TestWrapSQLError_Conflict_Returns409() {
-	err := chi_repository.WrapSQLError(&pgconn.PgError{Code: "23505"})
+	err := yca_repository.WrapSQLError(&pgconn.PgError{Code: "23505"})
 	s.Require().Error(err)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(409, apiErr.StatusCode)
 	s.Equal("Conflict", apiErr.ErrorCode)
 }
 
 func (s *ErrorSuite) TestWrapSQLError_ForeignKey_Returns422() {
-	err := chi_repository.WrapSQLError(&pgconn.PgError{Code: "23503"})
+	err := yca_repository.WrapSQLError(&pgconn.PgError{Code: "23503"})
 	s.Require().Error(err)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(422, apiErr.StatusCode)
 	s.Equal("UnprocessableEntity", apiErr.ErrorCode)
@@ -79,16 +79,16 @@ func (s *ErrorSuite) TestWrapSQLError_ForeignKey_Returns422() {
 
 func (s *ErrorSuite) TestWrapSQLError_GenericErrorPassthrough() {
 	inner := errors.New("connection reset")
-	err := chi_repository.WrapSQLError(inner)
+	err := yca_repository.WrapSQLError(inner)
 	s.Require().Error(err)
 	s.ErrorIs(err, inner)
 }
 
 func (s *ErrorSuite) TestErrNotFoundNoRowsAffected() {
-	err := chi_repository.ErrNotFoundNoRowsAffected()
+	err := yca_repository.ErrNotFoundNoRowsAffected()
 	s.Require().Error(err)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(404, apiErr.StatusCode)
 	s.Equal("NotFound", apiErr.ErrorCode)

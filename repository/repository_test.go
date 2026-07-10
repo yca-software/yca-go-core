@@ -1,4 +1,4 @@
-package chi_repository_test
+package yca_repository_test
 
 import (
 	"context"
@@ -17,9 +17,9 @@ import (
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
 
-	chi_error "github.com/yca-software/yca-go-core/error"
-	chi_observer "github.com/yca-software/yca-go-core/observer"
-	chi_repository "github.com/yca-software/yca-go-core/repository"
+	yca_error "github.com/yca-software/yca-go-core/error"
+	yca_observer "github.com/yca-software/yca-go-core/observer"
+	yca_repository "github.com/yca-software/yca-go-core/repository"
 )
 
 type Product struct {
@@ -64,8 +64,8 @@ type RepositorySuite struct {
 	suite.Suite
 	db              *sqlx.DB
 	container       testcontainers.Container
-	repo            chi_repository.Repository[Product]
-	repoWithMetrics chi_repository.Repository[Product]
+	repo            yca_repository.Repository[Product]
+	repoWithMetrics yca_repository.Repository[Product]
 	metricsHook     *mockMetricsHook
 }
 
@@ -99,11 +99,11 @@ func (s *RepositorySuite) SetupSuite() {
 	s.runMigrations()
 
 	columns := []string{"id", "name", "description", "price", "stock", "category", "is_active", "created_at", "updated_at"}
-	s.repo = chi_repository.NewRepository[Product](s.db, "products", columns, nil)
+	s.repo = yca_repository.NewRepository[Product](s.db, "products", columns, nil)
 
 	s.metricsHook = &mockMetricsHook{}
-	var hook chi_observer.QueryMetricsHook = s.metricsHook
-	s.repoWithMetrics = chi_repository.NewRepository[Product](s.db, "products", columns, hook)
+	var hook yca_observer.QueryMetricsHook = s.metricsHook
+	s.repoWithMetrics = yca_repository.NewRepository[Product](s.db, "products", columns, hook)
 }
 
 func (s *RepositorySuite) TearDownSuite() {
@@ -157,7 +157,7 @@ func (s *RepositorySuite) TestCreateAndGet() {
 
 func (s *RepositorySuite) TestGet_NilCondition_ReturnsError() {
 	_, err := s.repo.Get(context.Background(), nil, nil)
-	s.ErrorIs(err, chi_repository.ErrConditionRequired)
+	s.ErrorIs(err, yca_repository.ErrConditionRequired)
 }
 
 func (s *RepositorySuite) TestGet_NotFound() {
@@ -165,7 +165,7 @@ func (s *RepositorySuite) TestGet_NotFound() {
 	s.Error(err)
 	s.Nil(product)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(404, apiErr.StatusCode)
 }
@@ -247,7 +247,7 @@ func (s *RepositorySuite) TestUpdate() {
 
 func (s *RepositorySuite) TestUpdate_NilCondition_ReturnsError() {
 	err := s.repo.Update(context.Background(), nil, map[string]any{"price": 10.0})
-	s.ErrorIs(err, chi_repository.ErrConditionRequired)
+	s.ErrorIs(err, yca_repository.ErrConditionRequired)
 }
 
 func (s *RepositorySuite) TestDelete() {
@@ -267,7 +267,7 @@ func (s *RepositorySuite) TestDelete_NotFound() {
 	err := s.repo.Delete(context.Background(), squirrel.Eq{"name": "missing"})
 	s.Require().Error(err)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(404, apiErr.StatusCode)
 }
@@ -304,14 +304,14 @@ func (s *RepositorySuite) TestUniqueConstraintError() {
 	err := s.repo.Create(ctx, data)
 	s.Require().Error(err)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(409, apiErr.StatusCode)
 }
 
 func (s *RepositorySuite) TestRunInTx_Commit() {
 	ctx := context.Background()
-	err := chi_repository.RunInTx(ctx, s.db, nil, func(tx chi_repository.Tx) error {
+	err := yca_repository.RunInTx(ctx, s.db, nil, func(tx yca_repository.Tx) error {
 		txRepo := s.repo.WithTx(tx)
 		return txRepo.Create(ctx, map[string]any{
 			"name": "Tx Product", "price": 100.0, "stock": 10, "is_active": true,
@@ -326,7 +326,7 @@ func (s *RepositorySuite) TestRunInTx_Commit() {
 
 func (s *RepositorySuite) TestRunInTx_Rollback() {
 	ctx := context.Background()
-	err := chi_repository.RunInTx(ctx, s.db, nil, func(tx chi_repository.Tx) error {
+	err := yca_repository.RunInTx(ctx, s.db, nil, func(tx yca_repository.Tx) error {
 		txRepo := s.repo.WithTx(tx)
 		if err := txRepo.Create(ctx, map[string]any{
 			"name": "Rollback Product", "price": 100.0, "stock": 10, "is_active": true,

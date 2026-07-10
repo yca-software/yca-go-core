@@ -3,7 +3,7 @@
 JSON-based i18n for 2Chi projects, built on [go-i18n](https://github.com/nicksnyder/go-i18n).
 
 ```go
-import chi_localizer "github.com/yca-software/yca-go-core/localizer"
+import yca_localizer "github.com/yca-software/yca-go-core/localizer"
 ```
 
 ## API
@@ -43,7 +43,7 @@ For each entry in `supportedLanguages`, `New` loads `{localesPath}/{lang}.json` 
 ## Example
 
 ```go
-loc := chi_localizer.New(
+loc := yca_localizer.New(
     []string{"en", "es", "tr"},
     "en",
     "/app/locales",

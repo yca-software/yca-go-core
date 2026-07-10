@@ -1,4 +1,4 @@
-package chi_google_test
+package yca_google_test
 
 import (
 	"net/http"
@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	chi_google "github.com/yca-software/yca-go-core/google"
-	chi_google_maps "github.com/yca-software/yca-go-core/google/maps"
-	chi_google_oauth "github.com/yca-software/yca-go-core/google/oauth"
+	yca_google "github.com/yca-software/yca-go-core/google"
+	yca_google_maps "github.com/yca-software/yca-go-core/google/maps"
+	yca_google_oauth "github.com/yca-software/yca-go-core/google/oauth"
 )
 
 type ModuleSuite struct {
@@ -20,17 +20,17 @@ func TestModuleSuite(t *testing.T) {
 }
 
 func (s *ModuleSuite) TestNew_disabledCapabilities() {
-	mod := chi_google.New(chi_google.Config{
-		OAuth: &chi_google_oauth.OAuthConfig{},
-		Maps:  &chi_google_maps.MapsConfig{},
+	mod := yca_google.New(yca_google.Config{
+		OAuth: &yca_google_oauth.OAuthConfig{},
+		Maps:  &yca_google_maps.MapsConfig{},
 	})
 	s.Nil(mod.OAuth)
 	s.Nil(mod.Maps)
 }
 
 func (s *ModuleSuite) TestNew_oauthOnly() {
-	mod := chi_google.New(chi_google.Config{
-		OAuth: &chi_google_oauth.OAuthConfig{
+	mod := yca_google.New(yca_google.Config{
+		OAuth: &yca_google_oauth.OAuthConfig{
 			ClientID:     "id",
 			ClientSecret: "secret",
 			RedirectURL:  "http://localhost/callback",
@@ -42,8 +42,8 @@ func (s *ModuleSuite) TestNew_oauthOnly() {
 }
 
 func (s *ModuleSuite) TestNew_mapsOnly() {
-	mod := chi_google.New(chi_google.Config{
-		Maps:       &chi_google_maps.MapsConfig{APIKey: "maps-key"},
+	mod := yca_google.New(yca_google.Config{
+		Maps:       &yca_google_maps.MapsConfig{APIKey: "maps-key"},
 		HTTPClient: http.DefaultClient,
 	})
 	s.Nil(mod.OAuth)
@@ -51,13 +51,13 @@ func (s *ModuleSuite) TestNew_mapsOnly() {
 }
 
 func (s *ModuleSuite) TestNew_bothEnabled() {
-	mod := chi_google.New(chi_google.Config{
-		OAuth: &chi_google_oauth.OAuthConfig{
+	mod := yca_google.New(yca_google.Config{
+		OAuth: &yca_google_oauth.OAuthConfig{
 			ClientID:     "id",
 			ClientSecret: "secret",
 			RedirectURL:  "http://localhost/callback",
 		},
-		Maps:       &chi_google_maps.MapsConfig{APIKey: "maps-key"},
+		Maps:       &yca_google_maps.MapsConfig{APIKey: "maps-key"},
 		HTTPClient: http.DefaultClient,
 	})
 	s.NotNil(mod.OAuth)

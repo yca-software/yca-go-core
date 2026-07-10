@@ -1,11 +1,11 @@
-package chi_repository
+package yca_repository
 
 import (
 	"database/sql"
 	"errors"
 
 	"github.com/jackc/pgx/v5/pgconn"
-	chi_error "github.com/yca-software/yca-go-core/error"
+	yca_error "github.com/yca-software/yca-go-core/error"
 )
 
 func WrapSQLError(err error) error {
@@ -14,16 +14,16 @@ func WrapSQLError(err error) error {
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return chi_error.NewNotFoundError(err, "NotFound", nil)
+		return yca_error.NewNotFoundError(err, "NotFound", nil)
 	}
 
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
 		case "23505":
-			return chi_error.NewConflictError(err, "Conflict", nil)
+			return yca_error.NewConflictError(err, "Conflict", nil)
 		case "23503":
-			return chi_error.NewUnprocessableEntityError(err, "UnprocessableEntity", nil)
+			return yca_error.NewUnprocessableEntityError(err, "UnprocessableEntity", nil)
 		}
 	}
 
@@ -31,5 +31,5 @@ func WrapSQLError(err error) error {
 }
 
 func ErrNotFoundNoRowsAffected() error {
-	return chi_error.NewNotFoundError(errors.New("no rows affected"), "NotFound", nil)
+	return yca_error.NewNotFoundError(errors.New("no rows affected"), "NotFound", nil)
 }

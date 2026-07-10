@@ -3,7 +3,7 @@
 Postgres integration test helpers for 2Chi Go modules and services. Spins up a shared PostGIS container (or uses an external DSN), runs goose migrations, and exposes `*sql.DB` / `*sqlx.DB` handles for repository tests.
 
 ```go
-import chi_test "github.com/yca-software/yca-go-core/test"
+import yca_test "github.com/yca-software/yca-go-core/test"
 ```
 
 ## Quick start
@@ -19,7 +19,7 @@ import (
     "runtime"
     "testing"
 
-    chi_test "github.com/yca-software/yca-go-core/test"
+    yca_test "github.com/yca-software/yca-go-core/test"
 )
 
 func migrationsDir() string {
@@ -29,12 +29,12 @@ func migrationsDir() string {
 
 func TestMain(m *testing.M) {
     code := m.Run()
-    chi_test.Cleanup()
+    yca_test.Cleanup()
     os.Exit(code)
 }
 
 func (s *Suite) SetupSuite() {
-    testDB, err := chi_test.Get(migrationsDir())
+    testDB, err := yca_test.Get(migrationsDir())
     s.Require().NoError(err)
     // ...
 }

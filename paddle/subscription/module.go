@@ -1,4 +1,4 @@
-package chi_paddle_subscription
+package yca_paddle_subscription
 
 import (
 	"context"

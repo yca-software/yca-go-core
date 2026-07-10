@@ -1,11 +1,11 @@
-package chi_observer_test
+package yca_observer_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
 
-	chi_observer "github.com/yca-software/yca-go-core/observer"
+	yca_observer "github.com/yca-software/yca-go-core/observer"
 )
 
 type RateLimitSuite struct {
@@ -17,9 +17,9 @@ func TestRateLimitSuite(t *testing.T) {
 }
 
 func (s *RateLimitSuite) TestHashRateLimitIdentifier_stableAndNonReversible() {
-	a := chi_observer.HashRateLimitIdentifier("11111111-1111-4111-8111-111111111101")
-	b := chi_observer.HashRateLimitIdentifier("11111111-1111-4111-8111-111111111101")
-	c := chi_observer.HashRateLimitIdentifier("22222222-2222-4222-8222-222222222202")
+	a := yca_observer.HashRateLimitIdentifier("11111111-1111-4111-8111-111111111101")
+	b := yca_observer.HashRateLimitIdentifier("11111111-1111-4111-8111-111111111101")
+	c := yca_observer.HashRateLimitIdentifier("22222222-2222-4222-8222-222222222202")
 
 	s.Equal(a, b)
 	s.NotEqual(a, c)
@@ -28,6 +28,6 @@ func (s *RateLimitSuite) TestHashRateLimitIdentifier_stableAndNonReversible() {
 }
 
 func (s *RateLimitSuite) TestHashRateLimitIdentifier_unknown() {
-	s.Equal("unknown", chi_observer.HashRateLimitIdentifier(""))
-	s.Equal("unknown", chi_observer.HashRateLimitIdentifier("unknown"))
+	s.Equal("unknown", yca_observer.HashRateLimitIdentifier(""))
+	s.Equal("unknown", yca_observer.HashRateLimitIdentifier("unknown"))
 }

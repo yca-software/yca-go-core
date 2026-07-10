@@ -1,4 +1,4 @@
-package chi_redis
+package yca_redis
 
 import (
 	"context"

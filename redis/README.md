@@ -3,7 +3,7 @@
 Redis client wrapper for 2Chi projects, built on [go-redis](https://github.com/redis/go-redis).
 
 ```go
-import chi_redis "github.com/yca-software/yca-go-core/redis"
+import yca_redis "github.com/yca-software/yca-go-core/redis"
 ```
 
 ## Configuration
@@ -24,7 +24,7 @@ import chi_redis "github.com/yca-software/yca-go-core/redis"
 ## Example
 
 ```go
-r, err := chi_redis.NewRedis(chi_redis.RedisClientConfig{
+r, err := yca_redis.NewRedis(yca_redis.RedisClientConfig{
     DSN: cfg.RedisDSN,
 })
 if err != nil {

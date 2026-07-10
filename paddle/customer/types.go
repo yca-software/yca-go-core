@@ -1,4 +1,4 @@
-package chi_paddle_customer
+package yca_paddle_customer
 
 // CustomerInput is the data required to create or update a Paddle customer.
 type CustomerInput struct {

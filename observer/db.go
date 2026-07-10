@@ -1,4 +1,4 @@
-package chi_observer
+package yca_observer
 
 import (
 	"time"

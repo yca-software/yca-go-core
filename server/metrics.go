@@ -1,4 +1,4 @@
-package chi_server
+package yca_server
 
 import (
 	"github.com/labstack/echo/v4"

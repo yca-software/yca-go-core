@@ -3,14 +3,14 @@
 Generic PostgreSQL repository for 2Chi projects. Builds queries with [Squirrel](https://github.com/Masterminds/squirrel), runs them via [sqlx](https://github.com/jmoiron/sqlx), maps SQL errors to `2chi-go-error`, and records optional Prometheus metrics via `2chi-go-observer`.
 
 ```go
-import chi_repository "github.com/yca-software/yca-go-core/repository"
+import yca_repository "github.com/yca-software/yca-go-core/repository"
 ```
 
 ## Create a repository
 
 ```go
 columns := []string{"id", "name", "email", "created_at"}
-repo := chi_repository.NewRepository[User](db, "users", columns, obs.GetQueryMetricsHook())
+repo := yca_repository.NewRepository[User](db, "users", columns, obs.GetQueryMetricsHook())
 ```
 
 `NewRepository` panics if `db` is nil, `tableName` is empty, or `columns` is empty.
@@ -34,7 +34,7 @@ repo := chi_repository.NewRepository[User](db, "users", columns, obs.GetQueryMet
 ## Transactions
 
 ```go
-err := chi_repository.RunInTx(ctx, db, hook, func(tx chi_repository.Tx) error {
+err := yca_repository.RunInTx(ctx, db, hook, func(tx yca_repository.Tx) error {
     txRepo := repo.WithTx(tx)
     return txRepo.Create(ctx, data)
 })

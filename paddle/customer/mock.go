@@ -1,4 +1,4 @@
-package chi_paddle_customer
+package yca_paddle_customer
 
 import (
 	"context"

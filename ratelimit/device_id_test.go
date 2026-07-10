@@ -1,4 +1,4 @@
-package chi_ratelimit_test
+package yca_ratelimit_test
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 
-	chi_ratelimit "github.com/yca-software/yca-go-core/ratelimit"
+	yca_ratelimit "github.com/yca-software/yca-go-core/ratelimit"
 )
 
 type DeviceIDSuite struct {
@@ -27,7 +27,7 @@ func (s *DeviceIDSuite) newContext(req *http.Request) echo.Context {
 
 func (s *DeviceIDSuite) TestEnsureDeviceID_IssuesCookie() {
 	var issued string
-	mw := chi_ratelimit.EnsureDeviceID("local")
+	mw := yca_ratelimit.EnsureDeviceID("local")
 	handler := mw(func(c echo.Context) error {
 		issued, _ = c.Get("deviceId").(string)
 		return nil
@@ -44,7 +44,7 @@ func (s *DeviceIDSuite) TestEnsureDeviceID_IssuesCookie() {
 
 	var cookie *http.Cookie
 	for _, ck := range rec.Result().Cookies() {
-		if ck.Name == chi_ratelimit.DeviceIDCookieName {
+		if ck.Name == yca_ratelimit.DeviceIDCookieName {
 			cookie = ck
 			break
 		}
@@ -58,10 +58,10 @@ func (s *DeviceIDSuite) TestEnsureDeviceID_IssuesCookie() {
 func (s *DeviceIDSuite) TestEnsureDeviceID_ReusesCookie() {
 	deviceID := uuid.NewString()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	req.AddCookie(&http.Cookie{Name: chi_ratelimit.DeviceIDCookieName, Value: deviceID})
+	req.AddCookie(&http.Cookie{Name: yca_ratelimit.DeviceIDCookieName, Value: deviceID})
 
 	var resolved string
-	mw := chi_ratelimit.EnsureDeviceID("local")
+	mw := yca_ratelimit.EnsureDeviceID("local")
 	s.Require().NoError(mw(func(c echo.Context) error {
 		resolved, _ = c.Get("deviceId").(string)
 		return nil
@@ -76,7 +76,7 @@ func (s *DeviceIDSuite) TestEnsureDeviceID_ReusesHeader() {
 	req.Header.Set("X-Device-Id", deviceID)
 
 	var resolved string
-	mw := chi_ratelimit.EnsureDeviceID("local")
+	mw := yca_ratelimit.EnsureDeviceID("local")
 	s.Require().NoError(mw(func(c echo.Context) error {
 		resolved, _ = c.Get("deviceId").(string)
 		return nil
@@ -87,11 +87,11 @@ func (s *DeviceIDSuite) TestEnsureDeviceID_ReusesHeader() {
 
 func (s *DeviceIDSuite) TestEnsureDeviceID_InvalidValuesIgnored() {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	req.AddCookie(&http.Cookie{Name: chi_ratelimit.DeviceIDCookieName, Value: "not-a-uuid"})
+	req.AddCookie(&http.Cookie{Name: yca_ratelimit.DeviceIDCookieName, Value: "not-a-uuid"})
 	req.Header.Set("X-Device-Id", "also-invalid")
 
 	var resolved string
-	mw := chi_ratelimit.EnsureDeviceID("local")
+	mw := yca_ratelimit.EnsureDeviceID("local")
 	rec := httptest.NewRecorder()
 	c := echo.New().NewContext(req, rec)
 	s.Require().NoError(mw(func(c echo.Context) error {
@@ -108,13 +108,13 @@ func (s *DeviceIDSuite) TestEnsureDeviceID_SecureOutsideLocal() {
 	rec := httptest.NewRecorder()
 	c := echo.New().NewContext(req, rec)
 
-	s.Require().NoError(chi_ratelimit.EnsureDeviceID("production")(func(c echo.Context) error {
+	s.Require().NoError(yca_ratelimit.EnsureDeviceID("production")(func(c echo.Context) error {
 		return nil
 	})(c))
 
 	var cookie *http.Cookie
 	for _, ck := range rec.Result().Cookies() {
-		if ck.Name == chi_ratelimit.DeviceIDCookieName {
+		if ck.Name == yca_ratelimit.DeviceIDCookieName {
 			cookie = ck
 			break
 		}

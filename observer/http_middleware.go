@@ -1,4 +1,4 @@
-package chi_observer
+package yca_observer
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	chi_error "github.com/yca-software/yca-go-core/error"
+	yca_error "github.com/yca-software/yca-go-core/error"
 )
 
 type HTTPMiddlewareProvider interface {
@@ -35,7 +35,7 @@ func (o *Observer) EchoMiddleware(skipper func(echo.Context) bool) echo.Middlewa
 			// the status might still be 200. We should check that.
 			if err != nil && !c.Response().Committed {
 				status = http.StatusInternalServerError
-				if apiErr, ok := chi_error.AsError(err); ok {
+				if apiErr, ok := yca_error.AsError(err); ok {
 					status = apiErr.StatusCode
 				} else if he, ok := err.(*echo.HTTPError); ok {
 					status = he.Code

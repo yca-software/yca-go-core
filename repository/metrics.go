@@ -1,14 +1,14 @@
-package chi_repository
+package yca_repository
 
 import (
 	"strings"
 	"time"
 
-	chi_observer "github.com/yca-software/yca-go-core/observer"
+	yca_observer "github.com/yca-software/yca-go-core/observer"
 )
 
 // recordMetrics records query metrics if a hook is provided.
-func recordMetrics(hook chi_observer.QueryMetricsHook, tableName, operation string, start time.Time, err error) {
+func recordMetrics(hook yca_observer.QueryMetricsHook, tableName, operation string, start time.Time, err error) {
 	if hook == nil {
 		return
 	}

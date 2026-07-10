@@ -1,4 +1,4 @@
-package chi_template_test
+package yca_template_test
 
 import (
 	"os"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	chi_template "github.com/yca-software/yca-go-core/template"
+	yca_template "github.com/yca-software/yca-go-core/template"
 )
 
 type HTMLSuite struct {
@@ -39,14 +39,14 @@ func (s *HTMLSuite) writeTemplate(name, content string) {
 func (s *HTMLSuite) TestRender_success() {
 	s.writeTemplate("welcome", "<p>Hello, {{.Name}}!</p>")
 
-	renderer := chi_template.NewHTML(s.dir)
+	renderer := yca_template.NewHTML(s.dir)
 	out, err := renderer.Render("welcome", map[string]string{"Name": "World"})
 	s.Require().NoError(err)
 	s.Equal("<p>Hello, World!</p>", out)
 }
 
 func (s *HTMLSuite) TestRender_rejectsPathTraversal() {
-	renderer := chi_template.NewHTML(s.dir)
+	renderer := yca_template.NewHTML(s.dir)
 
 	_, err := renderer.Render("../secret", nil)
 	s.Require().Error(err)
@@ -60,7 +60,7 @@ func (s *HTMLSuite) TestRender_rejectsPathTraversal() {
 func (s *HTMLSuite) TestRender_cachesParsedTemplate() {
 	s.writeTemplate("cached", "<p>{{.Value}}</p>")
 
-	renderer := chi_template.NewHTML(s.dir)
+	renderer := yca_template.NewHTML(s.dir)
 	first, err := renderer.Render("cached", map[string]string{"Value": "one"})
 	s.Require().NoError(err)
 	s.Equal("<p>one</p>", first)
@@ -70,4 +70,21 @@ func (s *HTMLSuite) TestRender_cachesParsedTemplate() {
 	second, err := renderer.Render("cached", map[string]string{"Value": "two"})
 	s.Require().NoError(err)
 	s.Equal("<p>two</p>", second)
+}
+
+func (s *HTMLSuite) TestRender_withLayout() {
+	s.Require().NoError(os.WriteFile(filepath.Join(s.dir, "_layout.html"), []byte(`{{define "layout"}}
+<html><body><header>{{.BrandName}}</header>{{template "content" .}}</body></html>
+{{end}}`), 0o644))
+	s.writeTemplate("welcome", `{{define "welcome.html"}}{{template "layout" .}}{{end}}
+{{define "content"}}<p>Hello, {{.Name}}!</p>{{end}}`)
+
+	renderer := yca_template.NewHTML(s.dir)
+	out, err := renderer.Render("welcome", map[string]string{
+		"BrandName": "Acme",
+		"Name":      "World",
+	})
+	s.Require().NoError(err)
+	s.Contains(out, "Acme")
+	s.Contains(out, "Hello, World!")
 }

@@ -1,4 +1,4 @@
-package chi_aws_sqs
+package yca_aws_sqs
 
 import (
 	"context"

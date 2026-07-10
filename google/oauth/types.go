@@ -1,4 +1,4 @@
-package chi_google_oauth
+package yca_google_oauth
 
 // UserInfo is returned by Google OAuth userinfo.
 type UserInfo struct {

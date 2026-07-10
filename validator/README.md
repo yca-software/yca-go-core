@@ -3,7 +3,7 @@
 Struct validation for 2Chi projects, built on [go-playground/validator](https://github.com/go-playground/validator).
 
 ```go
-import chi_validator "github.com/yca-software/yca-go-core/validator"
+import yca_validator "github.com/yca-software/yca-go-core/validator"
 ```
 
 ## API
@@ -39,7 +39,7 @@ type CreateUserRequest struct {
     Username string `validate:"required,min=3,max=20"`
 }
 
-v := chi_validator.New()
+v := yca_validator.New()
 
 req := CreateUserRequest{Email: "bad", Age: 15, Username: "ab"}
 errs := v.ValidateStruct(req)

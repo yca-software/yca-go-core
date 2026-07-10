@@ -1,4 +1,4 @@
-package chi_google_maps_test
+package yca_google_maps_test
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	chi_error "github.com/yca-software/yca-go-core/error"
-	chi_google_maps "github.com/yca-software/yca-go-core/google/maps"
+	yca_error "github.com/yca-software/yca-go-core/error"
+	yca_google_maps "github.com/yca-software/yca-go-core/google/maps"
 )
 
 type MapsSuite struct {
@@ -23,13 +23,13 @@ func TestMapsSuite(t *testing.T) {
 }
 
 func (s *MapsSuite) TestMapsConfig_Enabled() {
-	s.False((chi_google_maps.MapsConfig{}).Enabled())
-	s.True((chi_google_maps.MapsConfig{APIKey: "key"}).Enabled())
+	s.False((yca_google_maps.MapsConfig{}).Enabled())
+	s.True((yca_google_maps.MapsConfig{APIKey: "key"}).Enabled())
 }
 
-func (s *MapsSuite) newMaps(handler http.HandlerFunc) chi_google_maps.Maps {
-	return chi_google_maps.NewMapsService(
-		chi_google_maps.MapsConfig{APIKey: "test-key"},
+func (s *MapsSuite) newMaps(handler http.HandlerFunc) yca_google_maps.Maps {
+	return yca_google_maps.NewMapsService(
+		yca_google_maps.MapsConfig{APIKey: "test-key"},
 		&http.Client{Transport: handlerTransport{handler: handler}},
 		nil,
 	)
@@ -49,13 +49,13 @@ func (s *MapsSuite) TestAutocompleteLocation_success() {
 	maps := s.newMaps(func(w http.ResponseWriter, r *http.Request) {
 		s.Contains(r.URL.Path, "autocomplete")
 		s.Equal("paris", r.URL.Query().Get("input"))
-		_ = json.NewEncoder(w).Encode(chi_google_maps.GooglePlacesAutocompleteResponse{
+		_ = json.NewEncoder(w).Encode(yca_google_maps.GooglePlacesAutocompleteResponse{
 			Status: "OK",
-			Predictions: []chi_google_maps.GooglePlacesAutocompletePrediction{
+			Predictions: []yca_google_maps.GooglePlacesAutocompletePrediction{
 				{
 					PlaceID:     "place-1",
 					Description: "Paris, France",
-					StructuredFormatting: chi_google_maps.GooglePlacesStructuredFormatting{
+					StructuredFormatting: yca_google_maps.GooglePlacesStructuredFormatting{
 						MainText:      "Paris",
 						SecondaryText: "France",
 					},
@@ -73,7 +73,7 @@ func (s *MapsSuite) TestAutocompleteLocation_success() {
 
 func (s *MapsSuite) TestAutocompleteLocation_zeroResults() {
 	maps := s.newMaps(func(w http.ResponseWriter, r *http.Request) {
-		_ = json.NewEncoder(w).Encode(chi_google_maps.GooglePlacesAutocompleteResponse{Status: "ZERO_RESULTS"})
+		_ = json.NewEncoder(w).Encode(yca_google_maps.GooglePlacesAutocompleteResponse{Status: "ZERO_RESULTS"})
 	})
 
 	resp, err := maps.AutocompleteLocation(context.Background(), "zzzznone")
@@ -89,7 +89,7 @@ func (s *MapsSuite) TestGetPlaceDetails_emptyPlaceID() {
 	_, err := maps.GetPlaceDetails(context.Background(), "")
 	s.Require().Error(err)
 
-	var apiErr *chi_error.Error
+	var apiErr *yca_error.Error
 	s.Require().ErrorAs(err, &apiErr)
 	s.Equal(400, apiErr.StatusCode)
 }
@@ -97,18 +97,18 @@ func (s *MapsSuite) TestGetPlaceDetails_emptyPlaceID() {
 func (s *MapsSuite) TestGetPlaceDetails_andGetLocationData() {
 	maps := s.newMaps(func(w http.ResponseWriter, r *http.Request) {
 		s.Contains(r.URL.Path, "details")
-		_ = json.NewEncoder(w).Encode(chi_google_maps.GooglePlacesDetailsResponse{
+		_ = json.NewEncoder(w).Encode(yca_google_maps.GooglePlacesDetailsResponse{
 			Status: "OK",
-			Result: chi_google_maps.GooglePlacesDetailsResult{
+			Result: yca_google_maps.GooglePlacesDetailsResult{
 				PlaceID:          "place-paris",
 				FormattedAddress: "Paris, France",
-				AddressComponents: []chi_google_maps.GooglePlacesAddressComponent{
+				AddressComponents: []yca_google_maps.GooglePlacesAddressComponent{
 					{LongName: "Paris", Types: []string{"locality"}},
 					{LongName: "75001", Types: []string{"postal_code"}},
 					{LongName: "France", Types: []string{"country"}},
 				},
-				Geometry: chi_google_maps.GooglePlacesGeometry{
-					Location: chi_google_maps.GooglePlacesLatLng{Lat: 48.8566, Lng: 2.3522},
+				Geometry: yca_google_maps.GooglePlacesGeometry{
+					Location: yca_google_maps.GooglePlacesLatLng{Lat: 48.8566, Lng: 2.3522},
 				},
 			},
 		})

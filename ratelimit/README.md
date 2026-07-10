@@ -3,13 +3,13 @@
 Redis-backed Echo rate limiting for 2Chi projects, built on [ulule/limiter](https://github.com/ulule/limiter).
 
 ```go
-import chi_ratelimit "github.com/yca-software/yca-go-core/ratelimit"
+import yca_ratelimit "github.com/yca-software/yca-go-core/ratelimit"
 ```
 
 ## Setup
 
 ```go
-rl := chi_ratelimit.NewRateLimiter(redisClient, observer, logger)
+rl := yca_ratelimit.NewRateLimiter(redisClient, observer, logger)
 ```
 
 When `redisClient` is nil, middleware is a no-op pass-through.
@@ -27,18 +27,18 @@ Rates use ulule format (e.g. `"100-M"`, `"5-H"`). Responses include `X-RateLimit
 
 ## Device ID
 
-`EnsureDeviceID(env)` issues a first-party `2chi_device_id` cookie and stores the ID on the Echo context. Used with `IPDeviceRateLimit`.
+`EnsureDeviceID(env)` issues a first-party `2yca_device_id` cookie and stores the ID on the Echo context. Used with `IPDeviceRateLimit`.
 
 | Source | Priority |
 | --- | --- |
 | Echo context (`deviceId`) | 1 |
-| Cookie `2chi_device_id` | 2 |
+| Cookie `2yca_device_id` | 2 |
 | Header `X-Device-Id` | 3 |
 
 Values must be UUID v4. Cookie `Secure` is enabled when `env != "local"`.
 
 ```go
-e.Use(chi_ratelimit.EnsureDeviceID(cfg.Env))
+e.Use(yca_ratelimit.EnsureDeviceID(cfg.Env))
 e.POST("/auth/login", handler, rl.IPDeviceRateLimit("10-M"))
 ```
 
@@ -49,9 +49,9 @@ On limit breach, the package records rate-limit metrics via `2chi-go-observer` a
 ## Example
 
 ```go
-rl := chi_ratelimit.NewRateLimiter(redis, obs, log)
+rl := yca_ratelimit.NewRateLimiter(redis, obs, log)
 
-e.Use(chi_ratelimit.EnsureDeviceID(cfg.Env))
+e.Use(yca_ratelimit.EnsureDeviceID(cfg.Env))
 e.POST("/auth/login", login, rl.IPDeviceRateLimit("10-M"))
 e.GET("/api/v1/members", listMembers, rl.PrincipalRateLimit("200-M"))
 e.POST("/api/v1/emails", sendEmail, rl.ScopedPrincipalRateLimit("5-H", "email"))
