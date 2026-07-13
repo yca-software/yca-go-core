@@ -25,3 +25,11 @@ func (m *MockIoT) UpdateThingShadow(ctx context.Context, thingName string, paylo
 	}
 	return args.Get(0).([]byte), args.Error(1)
 }
+
+func (m *MockIoT) GetThingConnectivityData(ctx context.Context, thingName string) (*ThingConnectivityData, error) {
+	args := m.Called(ctx, thingName)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*ThingConnectivityData), args.Error(1)
+}

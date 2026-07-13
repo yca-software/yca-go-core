@@ -49,6 +49,7 @@ Only enabled sub-configs are wired. Disabled services stay `nil` on `Module`.
   - `SQS.SendMessage`, `SQS.ReceiveMessages`, `SQS.DeleteMessage`, `SQS.ChangeMessageVisibility`
 - `iot`:
   - `IoT.GetThingShadow`, `IoT.UpdateThingShadow`
+  - `IoT.GetThingConnectivityData` (requires **fleet indexing** enabled on the AWS IoT account)
   - Data endpoint resolved at runtime via `iot:DescribeEndpoint` (region required on `yca_aws_iot.Config`)
 
 Each subpackage includes a testify mock (`MockSES`, `MockS3`, `MockSQS`, `MockIoT`) for unit tests.
