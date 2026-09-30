@@ -7,11 +7,14 @@ import (
 	"net/url"
 	"path/filepath"
 	"strings"
+	"time"
 
 	aws_sdk "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
+
+const defaultPresignGetExpires = 15 * time.Minute
 
 type Config struct {
 	Region   string
@@ -25,6 +28,7 @@ func (c Config) Enabled() bool {
 type S3 interface {
 	PutObject(ctx context.Context, opts PutObjectOptions) (publicURL string, err error)
 	GetObject(ctx context.Context, opts GetObjectOptions) (io.ReadCloser, error)
+	PresignGetObject(ctx context.Context, opts PresignGetObjectOptions) (url string, err error)
 	DeleteObject(ctx context.Context, bucket, key string) error
 }
 
@@ -98,6 +102,28 @@ func (c *s3Client) GetObject(ctx context.Context, opts GetObjectOptions) (io.Rea
 		return nil, fmt.Errorf("aws/s3: get object: %w", err)
 	}
 	return out.Body, nil
+}
+
+func (c *s3Client) PresignGetObject(ctx context.Context, opts PresignGetObjectOptions) (string, error) {
+	if opts.Bucket == "" || opts.Key == "" {
+		return "", fmt.Errorf("aws/s3: bucket and key are required")
+	}
+	expires := opts.Expires
+	if expires <= 0 {
+		expires = defaultPresignGetExpires
+	}
+	presigner := s3.NewPresignClient(c.client)
+	out, err := presigner.PresignGetObject(ctx, &s3.GetObjectInput{
+		Bucket: aws_sdk.String(opts.Bucket),
+		Key:    aws_sdk.String(opts.Key),
+	}, s3.WithPresignExpires(expires))
+	if err != nil {
+		return "", fmt.Errorf("aws/s3: presign get object: %w", err)
+	}
+	if out == nil || out.URL == "" {
+		return "", fmt.Errorf("aws/s3: presign get object returned empty URL")
+	}
+	return out.URL, nil
 }
 
 func (c *s3Client) DeleteObject(ctx context.Context, bucket, key string) error {

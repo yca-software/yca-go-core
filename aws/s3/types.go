@@ -2,6 +2,7 @@ package yca_aws_s3
 
 import (
 	"io"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
@@ -23,4 +24,12 @@ type PutObjectOptions struct {
 type GetObjectOptions struct {
 	Bucket string
 	Key    string
+}
+
+// PresignGetObjectOptions configures a short-lived GET URL for a private object.
+// Expires defaults to 15 minutes when zero.
+type PresignGetObjectOptions struct {
+	Bucket  string
+	Key     string
+	Expires time.Duration
 }

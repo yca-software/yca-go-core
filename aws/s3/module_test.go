@@ -1,6 +1,7 @@
 package yca_aws_s3
 
 import (
+	"context"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
@@ -40,4 +41,19 @@ func (s *S3ModuleSuite) TestContentTypeForObject_DefaultsByExtension() {
 func (s *S3ModuleSuite) TestPutObjectOptions_DefaultACLZeroValueIsValid() {
 	var opts PutObjectOptions
 	s.Equal(types.ObjectCannedACL(""), opts.ACL)
+}
+
+func (s *S3ModuleSuite) TestPresignGetObject_RequiresBucketAndKey() {
+	client := &s3Client{}
+	_, err := client.PresignGetObject(context.Background(), PresignGetObjectOptions{})
+	s.Error(err)
+	s.Contains(err.Error(), "bucket and key are required")
+
+	_, err = client.PresignGetObject(context.Background(), PresignGetObjectOptions{Bucket: "b"})
+	s.Error(err)
+	s.Contains(err.Error(), "bucket and key are required")
+
+	_, err = client.PresignGetObject(context.Background(), PresignGetObjectOptions{Key: "k"})
+	s.Error(err)
+	s.Contains(err.Error(), "bucket and key are required")
 }

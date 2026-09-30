@@ -24,6 +24,11 @@ func (m *MockS3) GetObject(ctx context.Context, opts GetObjectOptions) (io.ReadC
 	return args.Get(0).(io.ReadCloser), args.Error(1)
 }
 
+func (m *MockS3) PresignGetObject(ctx context.Context, opts PresignGetObjectOptions) (string, error) {
+	args := m.Called(ctx, opts)
+	return args.String(0), args.Error(1)
+}
+
 func (m *MockS3) DeleteObject(ctx context.Context, bucket, key string) error {
 	return m.Called(ctx, bucket, key).Error(0)
 }
