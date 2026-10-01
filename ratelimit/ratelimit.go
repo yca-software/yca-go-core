@@ -57,7 +57,15 @@ func (rl *RateLimiter) build(rate string, keyExtractor func(echo.Context) string
 
 			limiterCtx, err := instance.Get(ctx, key)
 			if err != nil {
-				return yca_error.NewTooManyRequestsError(err, "TooManyRequests", nil)
+				// Fail open: Redis blips must not lock out auth (SPA refresh storms on 429).
+				if rl.logger != nil {
+					rl.logger.WithContext(ctx).Warn("rate limit store unavailable; allowing request",
+						"error", err.Error(),
+						"method", c.Request().Method,
+						"route", c.Path(),
+					)
+				}
+				return next(c)
 			}
 
 			c.Response().Header().Set("X-RateLimit-Limit", fmt.Sprintf("%d", limiterCtx.Limit))

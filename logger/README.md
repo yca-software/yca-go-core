@@ -91,7 +91,14 @@ log.Info("login", "password", "secret") // password value becomes [REDACTED]
 
 ## Testing
 
-`MockLogger` is a testify mock for the `Logger` interface:
+`MockLogger` is a testify mock for the `Logger` interface. For suites that may
+log but do not assert on output, use the stub:
+
+```go
+Logger: yca_logger.NewStubMockLogger(),
+```
+
+For strict expectations:
 
 ```go
 m := new(yca_logger.MockLogger)

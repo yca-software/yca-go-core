@@ -32,6 +32,9 @@ type oauthService struct {
 }
 
 func NewOAuthService(cfg OAuthConfig, httpClient *http.Client) OAuth {
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
 	return &oauthService{
 		oauthConfig: &oauth2.Config{
 			ClientID:     cfg.ClientID,

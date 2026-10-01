@@ -93,6 +93,20 @@ func (s *RateLimitSuite) TestIPRateLimit_EnforcesLimit() {
 	s.Equal(http.StatusTooManyRequests, rec2.Code)
 }
 
+func (s *RateLimitSuite) TestIPRateLimit_RedisError_FailOpen() {
+	rl := yca_ratelimit.NewRateLimiter(s.redis, nil, nil)
+	e := s.newEcho()
+	e.Use(rl.IPRateLimit("1-M"))
+	e.GET("/", func(c echo.Context) error { return c.NoContent(http.StatusOK) })
+
+	s.mr.SetError("simulated redis outage")
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.RemoteAddr = "203.0.113.55:12345"
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	s.Equal(http.StatusOK, rec.Code)
+}
+
 func (s *RateLimitSuite) serveWithMiddleware(mw echo.MiddlewareFunc, req *http.Request) *httptest.ResponseRecorder {
 	e := s.newEcho()
 	e.Use(mw)
@@ -186,11 +200,3 @@ func (s *RateLimitSuite) TestScopedPrincipalRateLimit_ScopesKeys() {
 	s.Equal(http.StatusOK, rec2.Code)
 }
 
-func (s *RateLimitSuite) TestIPRateLimit_RedisFailureReturns429() {
-	rl := yca_ratelimit.NewRateLimiter(s.redis, nil, nil)
-	mw := rl.IPRateLimit("1-M")
-	s.mr.SetError("redis unavailable")
-
-	rec := s.serveWithMiddleware(mw, httptest.NewRequest(http.MethodGet, "/", nil))
-	s.Equal(http.StatusTooManyRequests, rec.Code)
-}

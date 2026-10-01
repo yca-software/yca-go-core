@@ -1,6 +1,6 @@
 # yca-go-core
 
-Single Go module for shared 2chi backend primitives. Published as `github.com/yca-software/yca-go-core`.
+Single Go module for shared YCA backend primitives. Published as `github.com/yca-software/yca-go-core`.
 
 ## Layout
 
